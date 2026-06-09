@@ -478,7 +478,7 @@ function showSupportSheet() {
     <div class="grip"></div>
     <button class="sheet-close" data-act="close-support" aria-label="Close">&times;</button>
     <div class="sheet-emblem"><img src="logo-mark.png" alt="Vimarsha" /></div>
-    <h2>Support this offering 🪷</h2>
+    <h2>Support this offering</h2>
     <p class="lead">Any amount is received with gratitude — a contribution toward keeping this practice alive.</p>
     <a class="paypal-btn" href="https://paypal.me/keshavom" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
