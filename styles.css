@@ -325,7 +325,7 @@ input,textarea,select{font-family:inherit}
 }
 .footer .blessing{font-family:var(--serif);font-style:italic;font-size:1rem;color:var(--warm-ink);line-height:1.6;margin-top:7px}
 .footer .blessing .nm{display:block;font-style:normal;font-weight:600;color:var(--brand-2);margin-top:6px;letter-spacing:.02em}
-.footer .blessing .nm .yantra{width:15px;height:15px;vertical-align:-2px;margin-left:7px}
+.footer .blessing .yantra{display:block;width:18px;height:18px;margin:10px auto 5px}
 .footer .credit-note{font-size:.7rem;color:var(--muted);margin:14px auto 0;line-height:1.55;white-space:nowrap}
 @media (max-width:520px){
   .footer .credit-note{white-space:normal;max-width:30ch;font-size:.82rem}

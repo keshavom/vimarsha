@@ -173,9 +173,8 @@ function footer() {
       <a href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener"><em>A Million Thoughts</em></a>.</p>
     <p class="offering">This humble effort is offered unto Maa’s Lotus Feet.</p>
     <div class="blessing">All mistakes are mine, all grace is of Maa.
-      <span class="nm">Narayani Namostute
-        <svg class="yantra" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 L20 6.5 L12 20 Z" fill="none" stroke="#c8102e" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="11" r="1.7" fill="#c8102e"/></svg>
-      </span></div>
+      <svg class="yantra" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 L20 6.5 L12 20 Z" fill="none" stroke="#c8102e" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="11" r="1.7" fill="#c8102e"/></svg>
+      <span class="nm">Narayani Namostute</span></div>
     <button class="support-btn" data-act="support">
       <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.4-9A4.4 4.4 0 0 1 12 6.1 4.4 4.4 0 0 1 21.4 12c-2.4 4.4-9.4 9-9.4 9z"/></svg>
       Support this offering
