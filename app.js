@@ -72,6 +72,13 @@ function applyTheme() {
   if (m) m.setAttribute('content', state.dark ? '#161311' : '#fbf6ee');
 }
 
+/* Install-to-home-screen support */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
 /* --------------------------- Utilities ---------------------------- */
 const $ = (sel, root = document) => root.querySelector(sel);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -169,6 +176,9 @@ function footer() {
         <svg class="yantra" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 L20 6.5 L12 20 Z" fill="none" stroke="#c8102e" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="11" r="1.7" fill="#c8102e"/></svg>
       </span></div>
     <div class="footer-actions">
+      ${isStandalone() ? '' : `<button class="ghost-btn" data-act="install">
+        <svg viewBox="0 0 24 24"><path d="M12 3v10M8 11l4 4 4-4M5 21h14"/></svg> Add to Home Screen
+      </button>`}
       <a class="ghost-btn" href="mailto:keshavrmk@gmail.com">
         <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out
       </a>
@@ -437,6 +447,43 @@ function showNameSheet(isFirst) {
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') commit(); });
 }
 
+/* ---------------------- Add-to-home-screen sheet ------------------ */
+function showInstallSheet() {
+  const ua = navigator.userAgent;
+  const iOS = /iPad|iPhone|iPod/.test(ua);
+  const android = /Android/.test(ua);
+  let steps;
+  if (iOS) {
+    steps = `<li>Tap the <strong>Share</strong> icon (the square with an upward arrow) in Safari’s bar.</li>
+      <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+      <li>Tap <strong>Add</strong> — Vimarsha now sits on your home screen like an app. 🪷</li>`;
+  } else if (android) {
+    steps = `<li>Tap the <strong>⋮</strong> menu at the top-right of your browser.</li>
+      <li>Tap <strong>Add to Home screen</strong> (or <strong>Install app</strong>).</li>
+      <li>Confirm <strong>Add</strong> — the Vimarsha icon appears on your home screen. 🪷</li>`;
+  } else {
+    steps = `<li>Click the <strong>install</strong> icon in the address bar (a small screen/＋ icon), or open the browser menu.</li>
+      <li>Choose <strong>Install Vimarsha</strong> / <strong>Add to Home screen</strong>.</li>
+      <li>It opens in its own window, like an app. 🪷</li>`;
+  }
+  const sheet = document.createElement('div');
+  sheet.className = 'scrim';
+  sheet.innerHTML = `<div class="sheet" role="dialog">
+    <div class="grip"></div>
+    <div class="sheet-emblem"><img src="logo-mark.png" alt="Vimarsha" /></div>
+    <h2>Keep Vimarsha one tap away</h2>
+    <p class="lead">Add it to your home screen — full-screen, app-like, and works offline.</p>
+    <ol class="install-steps">${steps}</ol>
+    <div class="save-bar" style="position:static;margin-top:8px">
+      <button class="btn-primary" data-act="close-install">Got it</button>
+    </div>
+  </div>`;
+  sheet.addEventListener('click', (e) => {
+    if (e.target === sheet || e.target.closest('[data-act="close-install"]')) sheet.remove();
+  });
+  document.body.appendChild(sheet);
+}
+
 /* ---------------------- Post-session stretch check ---------------- */
 function showStretchSheet(score) {
   const sheet = document.createElement('div');
@@ -586,6 +633,10 @@ document.addEventListener('click', (e) => {
       applyTheme(); render();
       break;
     case 'edit-name': showNameSheet(false); break;
+    case 'install':
+      if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; }); }
+      else showInstallSheet();
+      break;
     case 'home': state.draft = null; go('home'); break;
     case 'save': saveDraft(); break;
     case 'delete':
@@ -621,3 +672,6 @@ document.addEventListener('change', (e) => {
 /* ----------------------------- Boot ------------------------------- */
 applyTheme();
 render();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
