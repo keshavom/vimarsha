@@ -3,6 +3,7 @@
    can be enabled via config.js (see README). */
 
 /* ----------------------------- Config ----------------------------- */
+const UPI = { vpa: '7780408419@axl', name: 'Vimarsha' };
 const CONFIG = window.VIMARSHA_CONFIG || window.STILLNESS_CONFIG || {
   collectEndpoint: null, // optional URL that accepts a POST of one session (e.g. Google Apps Script / Formspree)
 };
@@ -175,6 +176,10 @@ function footer() {
       <span class="nm">Narayani Namostute
         <svg class="yantra" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 L20 6.5 L12 20 Z" fill="none" stroke="#c8102e" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="11" r="1.7" fill="#c8102e"/></svg>
       </span></div>
+    <button class="support-btn" data-act="support">
+      <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.6-9.4-9A4.4 4.4 0 0 1 12 6.1 4.4 4.4 0 0 1 21.4 12c-2.4 4.4-9.4 9-9.4 9z"/></svg>
+      Support this offering
+    </button>
     <div class="footer-actions">
       ${isStandalone() ? '' : `<button class="ghost-btn" data-act="install">
         <svg viewBox="0 0 24 24"><path d="M12 3v10M8 11l4 4 4-4M5 21h14"/></svg> Add to Home Screen
@@ -447,6 +452,39 @@ function showNameSheet(isFirst) {
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') commit(); });
 }
 
+/* ---------------------- Support / donation sheet ------------------ */
+function showSupportSheet() {
+  const sheet = document.createElement('div');
+  sheet.className = 'scrim';
+  sheet.innerHTML = `<div class="sheet" role="dialog">
+    <div class="grip"></div>
+    <div class="sheet-emblem"><img src="logo-mark.png" alt="Vimarsha" /></div>
+    <h2>Support this offering 🪷</h2>
+    <p class="lead">Any amount is received with gratitude — a contribution toward keeping this practice alive.</p>
+    <a class="btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:6px"
+       href="upi://pay?pa=${UPI.vpa}&amp;pn=Vimarsha&amp;cu=INR">Pay via any UPI app</a>
+    <div class="upi-id">
+      <span class="v">${UPI.vpa}</span>
+      <button data-act="copy-upi">Copy</button>
+    </div>
+    <div class="qr">
+      <img src="upi-qr.png" alt="UPI QR code for ${UPI.vpa}" />
+      <div class="qr-cap">On a computer? Scan this with any UPI app.</div>
+    </div>
+    <div class="save-bar" style="position:static;margin-top:16px">
+      <button class="btn-secondary" style="flex:1" data-act="close-support">Done</button>
+    </div>
+  </div>`;
+  sheet.addEventListener('click', (e) => {
+    if (e.target === sheet || e.target.closest('[data-act="close-support"]')) { sheet.remove(); return; }
+    if (e.target.closest('[data-act="copy-upi"]')) {
+      (navigator.clipboard ? navigator.clipboard.writeText(UPI.vpa) : Promise.reject())
+        .then(() => toast('UPI ID copied 🙏')).catch(() => toast(UPI.vpa));
+    }
+  });
+  document.body.appendChild(sheet);
+}
+
 /* ---------------------- Add-to-home-screen sheet ------------------ */
 function showInstallSheet() {
   const ua = navigator.userAgent;
@@ -633,6 +671,7 @@ document.addEventListener('click', (e) => {
       applyTheme(); render();
       break;
     case 'edit-name': showNameSheet(false); break;
+    case 'support': showSupportSheet(); break;
     case 'install':
       if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; }); }
       else showInstallSheet();

@@ -334,6 +334,23 @@ input,textarea,select{font-family:inherit}
 .footer .credit-note em{color:var(--brand-2);font-style:italic}
 .footer .credit-note a{color:var(--brand-2);text-decoration:underline;text-underline-offset:2px;font-weight:600}
 .footer .offering{font-family:var(--serif);font-style:italic;font-size:.82rem;color:var(--brand-2);margin:8px auto 0;white-space:nowrap}
+.support-btn{
+  display:inline-flex;align-items:center;gap:8px;margin:18px auto 0;
+  padding:12px 22px;border-radius:999px;border:1px solid var(--brand);
+  background:var(--brand-soft);color:var(--brand-2);font-weight:700;font-size:.9rem;
+}
+.support-btn svg{width:17px;height:17px;fill:currentColor;stroke:none}
+.support-btn:active{transform:scale(.97)}
+
+/* support sheet */
+.upi-id{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:14px 0;padding:12px 14px;border:1px solid var(--line-strong);border-radius:13px;background:var(--surface-2)}
+.upi-id .v{font-weight:600;font-variant-numeric:tabular-nums;word-break:break-all}
+.upi-id button{flex:none;border:1px solid var(--line-strong);background:var(--surface);color:var(--brand-2);font-weight:700;padding:8px 14px;border-radius:10px}
+.upi-id button:active{transform:scale(.95)}
+.qr{text-align:center}
+.qr img{width:196px;height:196px;border-radius:14px;border:1px solid var(--line);background:#fff;padding:8px;box-sizing:border-box}
+.qr-cap{font-size:.76rem;color:var(--muted);margin-top:8px}
+
 .footer-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
 .footer-actions .ghost-btn{color:var(--brand-2);text-decoration:none}
 .footer .lotus{font-size:1.3rem;margin-bottom:8px}
