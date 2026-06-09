@@ -137,7 +137,7 @@ function ring(score, size = 46) {
 function header(actionHtml = '') {
   return `<div class="app-head">
     <div class="brand">
-      <div class="mark"><img src="logo.png" alt="Vimarsha" /></div>
+      <div class="mark"><img src="logo-mark.png" alt="Vimarsha" /></div>
       <div><div class="name">Vimarsha</div><div class="sub">Meditation Journal</div></div>
     </div>
     ${actionHtml}
@@ -146,7 +146,7 @@ function header(actionHtml = '') {
 
 function footer() {
   return `<div class="footer fade-in">
-    <div class="lotus">🪷</div>
+    <div class="footer-logo"><img src="logo-mark.png" alt="Vimarsha" /></div>
     <p class="credit-note">This way of journaling is drawn from <strong>Om Swami’s</strong>
       <a href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener"><em>A Million Thoughts</em></a>.</p>
     <p class="offering">This humble effort is offered unto Maa’s Lotus Feet.</p>
@@ -177,7 +177,7 @@ function viewHome() {
 
   return header() + `
   <div class="card hero fade-in">
-    <div class="hero-emblem"><img src="logo.png" alt="Vimarsha — a hand offering a lotus" /></div>
+    <div class="hero-emblem"><img src="hero.svg" alt="Vimarsha — a hand offering a red lotus" /></div>
     <div class="greet">Jai Shree Hari, Sadhak</div>
     <h1>How was your practice?</h1>
     <div class="verse">
