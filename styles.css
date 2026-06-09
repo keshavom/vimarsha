@@ -289,7 +289,7 @@ input,textarea,select{font-family:inherit}
   text-align:center;margin:30px 8px 6px;padding-top:22px;border-top:1px solid var(--line);
   color:var(--muted);
 }
-.footer .blessing{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;line-height:1.6}
+.footer .blessing{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;line-height:1.6;margin-top:16px}
 .footer .blessing .nm{display:block;font-style:normal;font-weight:600;color:var(--brand-2);margin-top:6px;letter-spacing:.02em}
 .footer .credit-note{font-size:.82rem;color:var(--muted);margin:14px auto 0;max-width:34ch;line-height:1.55}
 .footer .credit-note strong{color:var(--text);font-weight:600}
