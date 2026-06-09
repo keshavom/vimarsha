@@ -292,14 +292,14 @@ input,textarea,select{font-family:inherit}
   text-align:center;margin:30px 8px 6px;padding-top:22px;border-top:1px solid var(--line);
   color:var(--muted);
 }
-.footer .blessing{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;line-height:1.6;margin-top:16px}
+.footer .blessing{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;line-height:1.6;margin-top:7px}
 .footer .blessing .nm{display:block;font-style:normal;font-weight:600;color:var(--brand-2);margin-top:6px;letter-spacing:.02em}
 .footer .blessing .nm .yantra{width:15px;height:15px;vertical-align:-2px;margin-left:7px}
 .footer .credit-note{font-size:.82rem;color:var(--muted);margin:14px auto 0;max-width:34ch;line-height:1.55}
 .footer .credit-note strong{color:var(--text);font-weight:600}
 .footer .credit-note em{color:var(--brand-2);font-style:italic}
 .footer .credit-note a{color:var(--brand-2);text-decoration:underline;text-underline-offset:2px;font-weight:600}
-.footer .offering{font-family:var(--serif);font-style:italic;font-size:.9rem;color:var(--brand-2);margin:8px auto 0;max-width:34ch}
+.footer .offering{font-family:var(--serif);font-style:italic;font-size:.82rem;color:var(--brand-2);margin:8px auto 0;white-space:nowrap}
 .footer-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
 .footer-actions .ghost-btn{color:var(--brand-2);text-decoration:none}
 .footer .lotus{font-size:1.3rem;margin-bottom:8px}
