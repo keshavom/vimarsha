@@ -163,7 +163,6 @@ function footer() {
 }
 
 function viewHome() {
-  const greet = (() => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; })();
   const sessions = [...state.sessions].sort((a, b) => (b.date + b.created).localeCompare(a.date + a.created));
   const total = sessions.length;
   const avgWell = total ? Math.round(sessions.reduce((s, x) => s + wellbeing(x), 0) / total) : 0;
@@ -179,7 +178,7 @@ function viewHome() {
   return header() + `
   <div class="card hero fade-in">
     <div class="hero-emblem"><img src="logo.png" alt="Vimarsha — a hand offering a lotus" /></div>
-    <div class="greet">${greet}, <button class="name-edit" data-act="edit-name">${esc(state.name || 'friend')}</button></div>
+    <div class="greet">Jai Shree Hari, Sadhak</div>
     <h1>How was your practice?</h1>
     <div class="verse">
       <div class="sa">${VERSE.sa}</div>
@@ -464,7 +463,6 @@ function render() {
   tabbar.hidden = false;
   tabbar.querySelectorAll('.tab').forEach((t) =>
     t.classList.toggle('active', t.dataset.view === state.view || (state.view === 'session' && t.dataset.view === 'session')));
-  if (state.view === 'home' && !state.name) showNameSheet(true);
 }
 
 /* ============================== Events ============================= */
