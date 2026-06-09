@@ -334,6 +334,18 @@ input,textarea,select{font-family:inherit}
 .footer .credit-note em{color:var(--brand-2);font-style:italic}
 .footer .credit-note a{color:var(--brand-2);text-decoration:underline;text-underline-offset:2px;font-weight:600}
 .footer .offering{font-family:var(--serif);font-style:italic;font-size:.82rem;color:var(--brand-2);margin:8px auto 0;white-space:nowrap}
+/* install banner (home) */
+.install-banner{display:flex;align-items:center;gap:12px;margin-top:14px;padding:11px 12px 11px 13px;border-radius:var(--radius-sm);border:1px solid var(--brand);background:var(--brand-soft)}
+.install-banner .ib-icon{flex:none;width:38px;height:38px;border-radius:50%;overflow:hidden;background:#fff;border:1px solid var(--line-strong)}
+.install-banner .ib-icon img{width:100%;height:100%;object-fit:cover;transform:scale(.84)}
+.install-banner .ib-text{flex:1;min-width:0;display:flex;flex-direction:column}
+.install-banner .ib-t{font-weight:700;font-size:.9rem;color:var(--text)}
+.install-banner .ib-d{font-size:.74rem;color:var(--muted);margin-top:1px}
+.install-banner .ib-cta{flex:none;background:var(--brand);color:#fff;font-weight:700;font-size:.85rem;padding:9px 16px;border-radius:10px}
+.install-banner .ib-cta:active{transform:scale(.95)}
+.install-banner .ib-x{flex:none;width:28px;height:28px;border-radius:50%;color:var(--muted);font-size:1.2rem;line-height:1;background:transparent}
+.install-banner .ib-x:active{transform:scale(.9)}
+
 .support-btn{
   display:inline-flex;align-items:center;gap:8px;margin:18px auto 0;
   padding:12px 22px;border-radius:999px;border:1px solid var(--brand);

@@ -65,6 +65,7 @@ const state = {
   draft: null,
   name: localStorage.getItem(NAME_KEY) || '',
   dark: localStorage.getItem(THEME_KEY) === 'dark',
+  installDismissed: localStorage.getItem('vimarsha.installDismissed') === '1',
 };
 function setName(n) { state.name = (n || '').trim().slice(0, 40); localStorage.setItem(NAME_KEY, state.name); }
 function applyTheme() {
@@ -166,6 +167,19 @@ function header(actionHtml = '') {
   </div>`;
 }
 
+function installBanner() {
+  if (isStandalone() || state.installDismissed) return '';
+  return `<div class="install-banner fade-in">
+    <span class="ib-icon"><img src="logo-mark.png" alt="" /></span>
+    <span class="ib-text">
+      <span class="ib-t">Keep Vimarsha one tap away</span>
+      <span class="ib-d">Add to your home screen — app-like &amp; offline.</span>
+    </span>
+    <button class="ib-cta" data-act="install">Add</button>
+    <button class="ib-x" data-act="dismiss-install" aria-label="Dismiss">&times;</button>
+  </div>`;
+}
+
 function footer() {
   return `<div class="footer fade-in">
     <div class="footer-logo"><img src="logo-mark.png" alt="Vimarsha" /></div>
@@ -180,9 +194,6 @@ function footer() {
       Support this offering
     </button>
     <div class="footer-actions">
-      ${isStandalone() ? '' : `<button class="ghost-btn" data-act="install">
-        <svg viewBox="0 0 24 24"><path d="M12 3v10M8 11l4 4 4-4M5 21h14"/></svg> Add to Home Screen
-      </button>`}
       <a class="ghost-btn" href="mailto:keshavrmk@gmail.com">
         <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out
       </a>
@@ -216,6 +227,8 @@ function viewHome() {
     </div>
     <button class="cta" data-act="new"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Begin a session</button>
   </div>
+
+  ${installBanner()}
 
   <div class="stat-row fade-in">
     <div class="stat"><div class="num">${total}</div><div class="lbl">Sessions</div></div>
@@ -674,6 +687,11 @@ document.addEventListener('click', (e) => {
     case 'install':
       if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; }); }
       else showInstallSheet();
+      break;
+    case 'dismiss-install':
+      state.installDismissed = true;
+      localStorage.setItem('vimarsha.installDismissed', '1');
+      render();
       break;
     case 'home': state.draft = null; go('home'); break;
     case 'save': saveDraft(); break;
