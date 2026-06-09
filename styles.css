@@ -53,12 +53,25 @@ input,textarea,select{font-family:inherit}
 .app-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
 .brand{display:flex;align-items:center;gap:12px}
 .brand .mark{
-  width:46px;height:46px;border-radius:15px;flex:none;
-  background:radial-gradient(120% 120% at 50% 18%, #fff8f0, #fde4d4);
-  border:1px solid var(--line-strong);
-  display:grid;place-items:center;box-shadow:0 8px 18px -10px rgba(200,16,46,.4);
+  width:46px;height:46px;border-radius:14px;flex:none;overflow:hidden;
+  background:#fff;border:1px solid var(--line-strong);
+  display:grid;place-items:center;box-shadow:0 8px 18px -10px rgba(200,16,46,.35);
 }
-.brand .mark svg{width:36px;height:36px}
+.brand .mark img{width:100%;height:100%;object-fit:cover;object-position:50% 27%;transform:scale(1.42)}
+
+/* Hero & welcome-sheet emblem — the full logo, framed on white */
+.hero-emblem{
+  width:132px;height:150px;margin:0 auto 12px;overflow:hidden;
+  background:#fff;border-radius:20px;border:1px solid var(--line);box-shadow:var(--shadow-soft);
+  display:grid;place-items:center;
+}
+.hero-emblem img{width:100%;height:100%;object-fit:contain}
+.sheet-emblem{
+  width:150px;height:168px;margin:2px auto 4px;overflow:hidden;
+  background:#fff;border-radius:20px;border:1px solid var(--line);box-shadow:var(--shadow-soft);
+  display:grid;place-items:center;
+}
+.sheet-emblem img{width:100%;height:100%;object-fit:contain}
 .brand .name{font-family:var(--serif);font-size:1.32rem;font-weight:600;letter-spacing:.2px;line-height:1}
 .brand .sub{font-size:.7rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:3px}
 
@@ -280,6 +293,7 @@ input,textarea,select{font-family:inherit}
 .footer .credit-note{font-size:.82rem;color:var(--muted);margin:14px auto 0;max-width:34ch;line-height:1.55}
 .footer .credit-note strong{color:var(--text);font-weight:600}
 .footer .credit-note em{color:var(--brand-2);font-style:italic}
+.footer .credit-note a{color:var(--brand-2);text-decoration:underline;text-underline-offset:2px;font-weight:600}
 .footer-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
 .footer-actions .ghost-btn{color:var(--brand-2);text-decoration:none}
 .footer .lotus{font-size:1.3rem;margin-bottom:8px}

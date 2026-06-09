@@ -39,24 +39,11 @@ const GROUPS = [
 
 const LABEL_PRESETS = ['Morning', 'Afternoon', 'Evening', 'Night'];
 const VERSE = {
-  sa: 'ध्यान ध्यातृ ध्येय रूपा · धर्माधर्म विवर्जिता',
-  tr: 'Dhyāna Dhyātṛ Dhyeya Rūpā · Dharmādharma Vivarjitā',
-  meaning: 'She is the meditation, the one who meditates, and that on which one meditates — and she transcends alike both virtue and vice.',
-  by: 'Lalitā Sahasranāma · nāma 254–255',
+  sa: 'ध्यान ध्यातृ ध्येयरूपा',
+  tr: 'Dhyāna Dhyātṛ Dhyeyarūpā',
+  meaning: 'She is the meditation, the one who meditates, and that on which one meditates — the three dissolved into One.',
+  by: 'Lalitā Sahasranāma · nāma 254',
 };
-
-/* Brand emblem: an alta-adorned hand cradling a red lotus. (.mark supplies the rounded backdrop) */
-const LOGO_SVG = `<svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
-  <path d="M50 52 C32 46 24 32 27 22 C39 27 47 38 50 52Z" fill="#f3899f"/>
-  <path d="M50 52 C68 46 76 32 73 22 C61 27 53 38 50 52Z" fill="#f3899f"/>
-  <path d="M50 52 C40 44 37 28 43 19 C49 26 51 39 50 52Z" fill="#e0405a"/>
-  <path d="M50 52 C60 44 63 28 57 19 C51 26 49 39 50 52Z" fill="#e0405a"/>
-  <path d="M50 52 C45 40 45 25 50 16 C55 25 55 40 50 52Z" fill="#c8102e"/>
-  <circle cx="50" cy="45" r="3.4" fill="#ffce6b"/>
-  <path d="M16 56 C20 54 26 55 30 58 C33 55 37 56 40 59 C43 56 47 57 50 60 C53 57 57 56 60 59 C63 56 67 55 70 58 C74 55 80 54 84 56 C84 74 68 86 50 86 C32 86 16 74 16 56Z" fill="#ecbf95" stroke="#b9824f" stroke-width="2.4" stroke-linejoin="round"/>
-  <g fill="#b00d28"><circle cx="23" cy="56" r="2.6"/><circle cx="35" cy="57.5" r="2.6"/><circle cx="65" cy="57.5" r="2.6"/><circle cx="77" cy="56" r="2.6"/></g>
-  <circle cx="50" cy="74" r="2.8" fill="#c8102e"/>
-</svg>`;
 
 /* --------------------------- Persistence -------------------------- */
 const LS_KEY = 'stillness.sessions.v1';
@@ -150,7 +137,7 @@ function ring(score, size = 46) {
 function header(actionHtml = '') {
   return `<div class="app-head">
     <div class="brand">
-      <div class="mark">${LOGO_SVG}</div>
+      <div class="mark"><img src="logo.png" alt="Vimarsha" /></div>
       <div><div class="name">Vimarsha</div><div class="sub">Meditation Journal</div></div>
     </div>
     ${actionHtml}
@@ -162,12 +149,10 @@ function footer() {
     <div class="lotus">🪷</div>
     <div class="blessing">All mistakes are mine, all grace is of Maa.
       <span class="nm">Narayani Namostute</span></div>
-    <p class="credit-note">This way of journaling your practice is drawn from <strong>Om Swami’s</strong>
-      <em>A Million Thoughts</em> — his guide to meditation. With gratitude.</p>
+    <p class="credit-note">This way of journaling is drawn from <strong>Om Swami’s</strong>
+      <a href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener"><em>A Million Thoughts</em></a>.
+      This humble effort is offered unto Maa’s lotus feet.</p>
     <div class="footer-actions">
-      <a class="ghost-btn" href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24"><path d="M5 4h11a2 2 0 0 1 2 2v14l-7-3-7 3V4z"/></svg> A Million Thoughts
-      </a>
       <a class="ghost-btn" href="mailto:keshavrmk@gmail.com">
         <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out
       </a>
@@ -191,6 +176,7 @@ function viewHome() {
 
   return header() + `
   <div class="card hero fade-in">
+    <div class="hero-emblem"><img src="logo.png" alt="Vimarsha — a hand offering a lotus" /></div>
     <div class="greet">${greet}, <button class="name-edit" data-act="edit-name">${esc(state.name || 'friend')}</button></div>
     <h1>How was your practice?</h1>
     <div class="verse">
@@ -412,7 +398,7 @@ function showNameSheet(isFirst) {
   sheet.className = 'scrim';
   sheet.innerHTML = `<div class="sheet" role="dialog">
     <div class="grip"></div>
-    <div class="celebrate">🪷</div>
+    <div class="sheet-emblem"><img src="logo.png" alt="Vimarsha" /></div>
     <h2>${isFirst ? 'Welcome to Vimarsha' : 'Your name'}</h2>
     <p class="lead">${isFirst ? 'What may I call you? Your name stays on this device and greets you each visit.' : 'Update how Vimarsha greets you.'}</p>
     <div class="field" style="margin:14px 2px 0">
