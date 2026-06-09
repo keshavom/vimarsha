@@ -373,6 +373,7 @@ input,textarea,select{font-family:inherit}
 .footer-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
 .footer-actions .ghost-btn{color:var(--brand-2);text-decoration:none}
 .footer .lotus{font-size:1.3rem;margin-bottom:8px}
+.footer .copyright{text-align:left;font-size:.72rem;color:var(--muted-2);margin-top:24px;padding-top:14px;border-top:1px solid var(--line)}
 
 /* ---------- Tab bar ---------- */
 .tabbar{

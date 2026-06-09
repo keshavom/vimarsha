@@ -198,6 +198,7 @@ function footer() {
         <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out
       </a>
     </div>
+    <div class="copyright">© 2026 Keshav Sharma</div>
   </div>`;
 }
 
