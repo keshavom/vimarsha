@@ -74,8 +74,8 @@
       ],
     },
     {
-      name: 'Hip Thrusts',
-      sanskrit: 'Glute Bridge',
+      name: 'Hip Bridges',
+      sanskrit: 'Setu Bandhasana',
       duration: '10–12 reps · ×2',
       target: 'Glutes · hamstrings · core',
       yt: 'nbjJjSa0cKo',
@@ -84,7 +84,7 @@
         'Lie on your back, knees bent, feet flat and hip-width apart.',
         'Press through your heels and squeeze your glutes.',
         'Lift your hips to a straight line from knees to shoulders; pause.',
-        'Lower slowly. (Rest your shoulders on a couch edge for a fuller hip thrust.)',
+        'Lower slowly, rolling down through the spine. Repeat.',
       ],
     },
   ];

@@ -39,10 +39,10 @@ const GROUPS = [
 
 const LABEL_PRESETS = ['Morning', 'Afternoon', 'Evening', 'Night'];
 const VERSE = {
-  sa: 'ध्यानध्यातृध्येयरूपा',
-  tr: 'Dhyāna-dhyātṛ-dhyeya-rūpā',
-  meaning: 'She is the meditation, the one who meditates, and that on which one meditates — the three dissolved into One.',
-  by: 'Lalitā Sahasranāma',
+  sa: 'ध्यान ध्यातृ ध्येय रूपा · धर्माधर्म विवर्जिता',
+  tr: 'Dhyāna Dhyātṛ Dhyeya Rūpā · Dharmādharma Vivarjitā',
+  meaning: 'She is the meditation, the one who meditates, and that on which one meditates — and she transcends alike both virtue and vice.',
+  by: 'Lalitā Sahasranāma · nāma 254–255',
 };
 
 /* Brand emblem: an alta-adorned hand cradling a red lotus. (.mark supplies the rounded backdrop) */
@@ -162,9 +162,16 @@ function footer() {
     <div class="lotus">🪷</div>
     <div class="blessing">All mistakes are mine, all grace is of Maa.
       <span class="nm">Narayani Namostute</span></div>
-    <a class="ghost-btn reach-btn" href="mailto:keshavrmk@gmail.com">
-      <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out
-    </a>
+    <p class="credit-note">This way of journaling your practice is drawn from <strong>Om Swami’s</strong>
+      <em>A Million Thoughts</em> — his guide to meditation. With gratitude.</p>
+    <div class="footer-actions">
+      <a class="ghost-btn" href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M5 4h11a2 2 0 0 1 2 2v14l-7-3-7 3V4z"/></svg> A Million Thoughts
+      </a>
+      <a class="ghost-btn" href="mailto:keshavrmk@gmail.com">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out
+      </a>
+    </div>
   </div>`;
 }
 
