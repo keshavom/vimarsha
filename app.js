@@ -14,7 +14,9 @@ const GROUPS = [
     polarity: 'pos', hint: 'higher is better', max: 60,
     aspects: [
       { k: 'Concentration' }, { k: 'Posture' }, { k: 'Mindfulness' },
-      { k: 'Alertness' }, { k: 'Duration' }, { k: 'Mood' },
+      { k: 'Alertness' },
+      { k: 'Duration', info: 'How well you sustained the full sit — staying for your intended length without cutting it short.' },
+      { k: 'Mood' },
     ],
   },
   {
