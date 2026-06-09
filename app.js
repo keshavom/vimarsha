@@ -38,11 +38,25 @@ const GROUPS = [
 ];
 
 const LABEL_PRESETS = ['Morning', 'Afternoon', 'Evening', 'Night'];
-const QUOTES = [
-  { text: 'Ultimately, meditation is silence and presence of the mind.', by: 'Om Swami · A Million Thoughts' },
-  { text: 'To see everything as it is requires perfect stillness of the mind. Silence is the way to meditation.', by: 'Om Swami · A Million Thoughts' },
-  { text: 'Thoughts that you do not let go leave an imprint on your mind. Meditation is the process of washing away that residue.', by: 'Om Swami · A Million Thoughts' },
-];
+const VERSE = {
+  sa: 'ध्यानध्यातृध्येयरूपा',
+  tr: 'Dhyāna-dhyātṛ-dhyeya-rūpā',
+  meaning: 'She is the meditation, the one who meditates, and that on which one meditates — the three dissolved into One.',
+  by: 'Lalitā Sahasranāma',
+};
+
+/* Brand emblem: an alta-adorned hand cradling a red lotus. (.mark supplies the rounded backdrop) */
+const LOGO_SVG = `<svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+  <path d="M50 52 C32 46 24 32 27 22 C39 27 47 38 50 52Z" fill="#f3899f"/>
+  <path d="M50 52 C68 46 76 32 73 22 C61 27 53 38 50 52Z" fill="#f3899f"/>
+  <path d="M50 52 C40 44 37 28 43 19 C49 26 51 39 50 52Z" fill="#e0405a"/>
+  <path d="M50 52 C60 44 63 28 57 19 C51 26 49 39 50 52Z" fill="#e0405a"/>
+  <path d="M50 52 C45 40 45 25 50 16 C55 25 55 40 50 52Z" fill="#c8102e"/>
+  <circle cx="50" cy="45" r="3.4" fill="#ffce6b"/>
+  <path d="M16 56 C20 54 26 55 30 58 C33 55 37 56 40 59 C43 56 47 57 50 60 C53 57 57 56 60 59 C63 56 67 55 70 58 C74 55 80 54 84 56 C84 74 68 86 50 86 C32 86 16 74 16 56Z" fill="#ecbf95" stroke="#b9824f" stroke-width="2.4" stroke-linejoin="round"/>
+  <g fill="#b00d28"><circle cx="23" cy="56" r="2.6"/><circle cx="35" cy="57.5" r="2.6"/><circle cx="65" cy="57.5" r="2.6"/><circle cx="77" cy="56" r="2.6"/></g>
+  <circle cx="50" cy="74" r="2.8" fill="#c8102e"/>
+</svg>`;
 
 /* --------------------------- Persistence -------------------------- */
 const LS_KEY = 'stillness.sessions.v1';
@@ -53,11 +67,14 @@ function load() {
 function persist() { localStorage.setItem(LS_KEY, JSON.stringify(state.sessions)); }
 
 /* ----------------------------- State ------------------------------ */
+const NAME_KEY = 'vimarsha.name';
 const state = {
   view: 'home',
   sessions: load(),
   draft: null,
+  name: localStorage.getItem(NAME_KEY) || '',
 };
+function setName(n) { state.name = (n || '').trim().slice(0, 40); localStorage.setItem(NAME_KEY, state.name); }
 
 /* --------------------------- Utilities ---------------------------- */
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -133,7 +150,7 @@ function ring(score, size = 46) {
 function header(actionHtml = '') {
   return `<div class="app-head">
     <div class="brand">
-      <div class="mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9.5"/></svg></div>
+      <div class="mark">${LOGO_SVG}</div>
       <div><div class="name">Vimarsha</div><div class="sub">Meditation Journal</div></div>
     </div>
     ${actionHtml}
@@ -144,14 +161,15 @@ function footer() {
   return `<div class="footer fade-in">
     <div class="lotus">🪷</div>
     <div class="blessing">All mistakes are mine, all grace is of Maa.
-      <span class="nm">Narayani Namostute.</span></div>
-    <div class="reach">Built with devotion for the practice<a href="mailto:keshavrmk@gmail.com">reach out</a></div>
+      <span class="nm">Narayani Namostute</span></div>
+    <a class="ghost-btn reach-btn" href="mailto:keshavrmk@gmail.com">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out
+    </a>
   </div>`;
 }
 
 function viewHome() {
   const greet = (() => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; })();
-  const q = QUOTES[new Date().getDate() % QUOTES.length];
   const sessions = [...state.sessions].sort((a, b) => (b.date + b.created).localeCompare(a.date + a.created));
   const total = sessions.length;
   const avgWell = total ? Math.round(sessions.reduce((s, x) => s + wellbeing(x), 0) / total) : 0;
@@ -166,9 +184,14 @@ function viewHome() {
 
   return header() + `
   <div class="card hero fade-in">
-    <div class="greet">${greet}, Keshav</div>
+    <div class="greet">${greet}, <button class="name-edit" data-act="edit-name">${esc(state.name || 'friend')}</button></div>
     <h1>How was your practice?</h1>
-    <div class="quote">“${q.text}”<span class="cite">— ${q.by}</span></div>
+    <div class="verse">
+      <div class="sa">${VERSE.sa}</div>
+      <div class="tr">${VERSE.tr}</div>
+      <div class="meaning">“${VERSE.meaning}”</div>
+      <span class="cite">— ${VERSE.by}</span>
+    </div>
     <button class="cta" data-act="new"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Begin a session</button>
   </div>
 
@@ -365,6 +388,32 @@ function avgBox(k, v, max) {
     <div class="bar-mini"><i style="width:${Math.round((v / max) * 100)}%"></i></div></div>`;
 }
 
+/* ----------------------------- Name sheet ------------------------- */
+function showNameSheet(isFirst) {
+  if (document.querySelector('.scrim')) return;
+  const sheet = document.createElement('div');
+  sheet.className = 'scrim';
+  sheet.innerHTML = `<div class="sheet" role="dialog">
+    <div class="grip"></div>
+    <div class="celebrate">🪷</div>
+    <h2>${isFirst ? 'Welcome to Vimarsha' : 'Your name'}</h2>
+    <p class="lead">${isFirst ? 'What may I call you? Your name stays on this device and greets you each visit.' : 'Update how Vimarsha greets you.'}</p>
+    <div class="field" style="margin:14px 2px 0">
+      <input type="text" id="name-input" placeholder="Your name" maxlength="40"
+        value="${esc(state.name)}" autocomplete="given-name" enterkeyhint="done">
+    </div>
+    <div class="save-bar" style="position:static;margin-top:16px">
+      <button class="btn-primary" data-act="save-name">${isFirst ? 'Begin' : 'Save'}</button>
+    </div>
+  </div>`;
+  document.body.appendChild(sheet);
+  const input = sheet.querySelector('#name-input');
+  setTimeout(() => input.focus(), 60);
+  const commit = () => { setName(input.value || 'friend'); sheet.remove(); render(); };
+  sheet.addEventListener('click', (e) => { if (e.target.closest('[data-act="save-name"]')) commit(); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') commit(); });
+}
+
 /* ---------------------- Post-session stretch sheet ---------------- */
 function showStretchSheet(score) {
   const picks = [...STRETCHES].sort(() => 0.5 - Math.random()).slice(0, 3);
@@ -410,6 +459,7 @@ function render() {
   tabbar.hidden = false;
   tabbar.querySelectorAll('.tab').forEach((t) =>
     t.classList.toggle('active', t.dataset.view === state.view || (state.view === 'session' && t.dataset.view === 'session')));
+  if (state.view === 'home' && !state.name) showNameSheet(true);
 }
 
 /* ============================== Events ============================= */
@@ -418,6 +468,7 @@ function saveDraft() {
   d.label = ($('#f-label')?.value || '').trim() || 'Session';
   d.date = $('#f-date')?.value || todayISO();
   d.notes = ($('#f-notes')?.value || '').trim();
+  d.userName = state.name || '';
 
   const idx = state.sessions.findIndex((s) => s.id === d.id);
   if (idx >= 0) state.sessions[idx] = d; else state.sessions.push(d);
@@ -504,6 +555,7 @@ document.addEventListener('click', (e) => {
   if (!act) return;
   switch (act) {
     case 'new': startDraft(); break;
+    case 'edit-name': showNameSheet(false); break;
     case 'home': state.draft = null; go('home'); break;
     case 'save': saveDraft(); break;
     case 'delete':

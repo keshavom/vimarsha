@@ -53,11 +53,12 @@ input,textarea,select{font-family:inherit}
 .app-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
 .brand{display:flex;align-items:center;gap:12px}
 .brand .mark{
-  width:44px;height:44px;border-radius:14px;flex:none;
-  background:linear-gradient(145deg,#f08a5d,var(--brand));
-  display:grid;place-items:center;box-shadow:0 10px 22px -10px var(--brand);
+  width:46px;height:46px;border-radius:15px;flex:none;
+  background:radial-gradient(120% 120% at 50% 18%, #fff8f0, #fde4d4);
+  border:1px solid var(--line-strong);
+  display:grid;place-items:center;box-shadow:0 8px 18px -10px rgba(200,16,46,.4);
 }
-.brand .mark svg{width:25px;height:25px;fill:none;stroke:#fff;stroke-width:2}
+.brand .mark svg{width:36px;height:36px}
 .brand .name{font-family:var(--serif);font-size:1.32rem;font-weight:600;letter-spacing:.2px;line-height:1}
 .brand .sub{font-size:.7rem;color:var(--muted);letter-spacing:.16em;text-transform:uppercase;margin-top:3px}
 
@@ -90,12 +91,14 @@ input,textarea,select{font-family:inherit}
   padding:26px 22px 24px;
 }
 .hero .greet{font-size:.78rem;color:var(--brand-2);letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+.hero .greet .name-edit{font:inherit;color:var(--brand-2);font-weight:700;background:none;border:none;border-bottom:1px dashed rgba(200,74,38,.55);padding:0 1px;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
+.hero .greet .name-edit:active{transform:scale(.97)}
 .hero h1{font-size:1.85rem;margin:8px 0 0;line-height:1.18}
-.hero .quote{
-  font-family:var(--serif);font-style:italic;font-size:1.06rem;color:#5b4a3c;
-  margin:16px auto 4px;max-width:30ch;line-height:1.5;position:relative;
-}
-.hero .quote .cite{display:block;font-style:normal;font-size:.74rem;letter-spacing:.04em;color:var(--muted);margin-top:8px;font-family:var(--sans)}
+.hero .verse{margin:18px auto 4px;max-width:32ch}
+.hero .verse .sa{font-family:"Noto Serif Devanagari",var(--serif);font-size:1.4rem;color:var(--brand-2);line-height:1.55;letter-spacing:.01em;font-weight:600}
+.hero .verse .tr{font-family:var(--serif);font-style:italic;font-size:.95rem;color:#7a5a48;margin-top:5px}
+.hero .verse .meaning{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;margin-top:12px;line-height:1.5}
+.hero .verse .cite{display:block;font-style:normal;font-size:.7rem;letter-spacing:.08em;color:var(--muted);margin-top:9px;text-transform:uppercase;font-family:var(--sans)}
 .hero .cta{
   margin-top:20px;display:inline-flex;align-items:center;gap:9px;
   background:linear-gradient(135deg,#ef7d4f,var(--brand));color:#fff;font-weight:650;font-size:.96rem;
@@ -264,8 +267,7 @@ input,textarea,select{font-family:inherit}
 }
 .footer .blessing{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;line-height:1.6}
 .footer .blessing .nm{display:block;font-style:normal;font-weight:600;color:var(--brand-2);margin-top:6px;letter-spacing:.02em}
-.footer .reach{font-size:.8rem;margin-top:14px}
-.footer .reach a{display:block;margin-top:6px;color:var(--brand-2);text-decoration:none;font-weight:600}
+.footer .reach-btn{margin-top:16px;color:var(--brand-2);text-decoration:none}
 .footer .lotus{font-size:1.3rem;margin-bottom:8px}
 
 /* ---------- Tab bar ---------- */
