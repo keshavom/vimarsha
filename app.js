@@ -43,7 +43,7 @@ const LABEL_PRESETS = ['Morning', 'Afternoon', 'Evening', 'Night'];
 const VERSE = {
   sa: 'ध्यान ध्यातृ ध्येयरूपा',
   tr: 'Dhyāna Dhyātṛ Dhyeyarūpā',
-  meaning: 'She is the meditation, the one who meditates, and that on which one meditates<br>— the three dissolved into One.',
+  meaning: 'She is the meditation,<br>the one who meditates,<br>and that on which one meditates<br>— the three dissolved into One.',
   by: 'Lalitā Sahasranāma · nāma 254',
 };
 
@@ -425,33 +425,35 @@ function showNameSheet(isFirst) {
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') commit(); });
 }
 
-/* ---------------------- Post-session stretch sheet ---------------- */
+/* ---------------------- Post-session stretch check ---------------- */
 function showStretchSheet(score) {
-  const picks = [...STRETCHES].sort(() => 0.5 - Math.random()).slice(0, 3);
-  const cards = picks.map((st) => `
-    <a class="stretch-mini" href="https://youtu.be/${st.yt}" target="_blank" rel="noopener">
-      <span class="thumb"><img loading="lazy" src="https://img.youtube.com/vi/${st.yt}/hqdefault.jpg" alt="${esc(st.name)}"><span class="play">▶</span></span>
-      <span class="mini-body">
-        <span class="mt">${esc(st.name)}</span>
-        <span class="ms">${esc(st.channel)} · ${esc(st.duration)}</span>
-      </span>
-    </a>`).join('');
   const sheet = document.createElement('div');
   sheet.className = 'scrim';
   sheet.innerHTML = `<div class="sheet" role="dialog">
     <div class="grip"></div>
     <div class="celebrate">🧘</div>
     <h2>Session saved</h2>
-    <p class="lead">Wellbeing score <strong>${score}/100</strong>. Before you rush off — unwind with a few stretches.</p>
-    ${cards}
-    <div class="save-bar" style="position:static;margin-top:16px">
-      <button class="btn-secondary" data-act="all-stretches">See all stretches</button>
-      <button class="btn-primary" data-act="close-sheet">Done</button>
+    <p class="lead">Wellbeing score <strong>${score}/100</strong>.</p>
+    <div class="stretch-check" id="check-step">
+      <p class="ask">Have you done your post-meditation stretches?</p>
+      <div class="choice-row">
+        <button class="choice" data-act="stretched-yes">Yes, I’ve stretched</button>
+        <button class="choice" data-act="stretched-no">Not yet</button>
+      </div>
     </div>
   </div>`;
   sheet.addEventListener('click', (e) => {
-    if (e.target === sheet || e.target.closest('[data-act="close-sheet"]')) { sheet.remove(); go('home'); }
-    if (e.target.closest('[data-act="all-stretches"]')) { sheet.remove(); go('stretches'); }
+    if (e.target === sheet) { sheet.remove(); go('home'); return; }
+    if (e.target.closest('[data-act="stretched-yes"]')) { sheet.remove(); toast('🙏 Well done'); go('home'); return; }
+    if (e.target.closest('[data-act="stretched-no"]')) {
+      sheet.querySelector('#check-step').innerHTML = `
+        <p class="ask">Take a gentle pause. 🪷<br>Recontemplate, return to that quiet, and move through your stretches before you carry on.</p>
+        <div class="choice-row">
+          <button class="btn-primary" data-act="go-stretches">Take me to the stretches</button>
+        </div>`;
+      return;
+    }
+    if (e.target.closest('[data-act="go-stretches"]')) { sheet.remove(); go('stretches'); return; }
   });
   document.body.appendChild(sheet);
 }

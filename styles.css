@@ -282,6 +282,14 @@ input,textarea,select{font-family:inherit}
 .sheet .lead{text-align:center;color:var(--muted);font-size:.92rem;margin:6px 0 4px}
 .celebrate{text-align:center;font-size:2.6rem;margin:4px 0 2px}
 
+/* post-session stretch check */
+.stretch-check{margin-top:10px}
+.stretch-check .ask{text-align:center;color:var(--text);font-family:var(--serif);font-size:1.08rem;line-height:1.5;margin:6px auto 16px;max-width:32ch}
+.choice-row{display:flex;gap:10px}
+.choice-row .choice{flex:1;padding:15px 12px;border-radius:15px;border:1px solid var(--line-strong);background:var(--surface);color:var(--text);font-weight:650;font-size:.94rem;box-shadow:var(--shadow-soft)}
+.choice-row .choice:active{transform:scale(.97)}
+.choice-row .btn-primary{flex:1}
+
 /* toast */
 .toast{
   position:fixed;left:50%;bottom:calc(112px + var(--safe-bottom));transform:translateX(-50%);
