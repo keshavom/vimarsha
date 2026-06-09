@@ -1,9 +1,14 @@
-# Stillness — Daily Meditation Journal
+# Vimarsha — Daily Meditation Journal
 
-A calm, mobile-first journal inspired by a paper meditation log. Rate each session **0–10**
-on a tap-bar, watch your totals add up live, and unwind afterward with guided
-**post-meditation stretches** (illustrated). Works offline, installs to the home screen,
-and runs entirely as static files — perfect for free GitHub Pages hosting.
+> *विमर्श* — reflection, contemplation.
+
+A calm, mobile-first journal inspired by a paper meditation log and the gentle,
+warm aesthetic of [os.me](https://os.me). Reflect on each session **0–10** on a
+tap-bar, watch your totals add up live, and unwind afterward with guided,
+illustrated **post-meditation stretches**. Works offline, installs to the home
+screen, and runs entirely as static files — perfect for free GitHub Pages hosting.
+
+> *“Ultimately, meditation is silence and presence of the mind.”* — Om Swami, *A Million Thoughts*
 
 ## What's inside
 - **Quality** (6 aspects · /60), **Blocks** (6 aspects · /60), **Off the cushion** (5 aspects · /50)
@@ -11,7 +16,7 @@ and runs entirely as static files — perfect for free GitHub Pages hosting.
 - **You name your own sessions** — pick a preset (Morning / Afternoon / Evening / Night) or type anything
 - Illustrated stretch library + a post-session stretch reminder
 - Insights: trend bars + averages across recent sessions
-- Export / import (JSON + CSV) — your data stays on your device by default
+- Export / import (JSON + CSV) — data stays on each person's device by default
 
 ## Run locally
 Open `index.html` in a browser, or serve it:
@@ -26,13 +31,16 @@ npx serve .      # or: python -m http.server 8080
 
 ## Collecting submissions centrally (optional)
 By default each person's entries live in **their own browser** (private, offline-friendly).
-If you want every submission sent to one place you own, create a `config.js`:
+To gather every submission into **one Google Sheet you own**, follow **`COLLECTION.md`**:
+deploy the `collector.gs` Apps Script, then paste its URL into `config.js`:
 
 ```js
-// config.js — loaded before app.js if present
-window.STILLNESS_CONFIG = {
-  collectEndpoint: "https://script.google.com/macros/s/XXXX/exec" // Apps Script / Formspree / etc.
+window.VIMARSHA_CONFIG = {
+  collectEndpoint: "https://script.google.com/macros/s/XXXX/exec",
 };
 ```
-The app will `POST` each saved session to that endpoint (and still keep the local copy).
-A ready-to-paste Google Apps Script collector is described in `COLLECTION.md`.
+The app then POSTs each saved session to that endpoint (and still keeps the local copy).
+The secret lives on Google's servers — never in the public page.
+
+---
+*All mistakes are mine, all grace is of Maa. Narayani Namostute.* 🪷

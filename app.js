@@ -3,7 +3,7 @@
    can be enabled via config.js (see README). */
 
 /* ----------------------------- Config ----------------------------- */
-const CONFIG = window.STILLNESS_CONFIG || {
+const CONFIG = window.VIMARSHA_CONFIG || window.STILLNESS_CONFIG || {
   collectEndpoint: null, // optional URL that accepts a POST of one session (e.g. Google Apps Script / Formspree)
 };
 
@@ -39,12 +39,9 @@ const GROUPS = [
 
 const LABEL_PRESETS = ['Morning', 'Afternoon', 'Evening', 'Night'];
 const QUOTES = [
-  'The quieter you become, the more you can hear.',
-  'Feelings come and go like clouds in a windy sky.',
-  'Within you there is a stillness you can retreat to anytime.',
-  'Meditation is not evasion; it is a serene encounter with reality.',
-  'You should sit in meditation for 20 minutes — unless you’re busy, then sit for an hour.',
-  'The mind is everything. What you think you become.',
+  { text: 'Ultimately, meditation is silence and presence of the mind.', by: 'Om Swami · A Million Thoughts' },
+  { text: 'To see everything as it is requires perfect stillness of the mind. Silence is the way to meditation.', by: 'Om Swami · A Million Thoughts' },
+  { text: 'Thoughts that you do not let go leave an imprint on your mind. Meditation is the process of washing away that residue.', by: 'Om Swami · A Million Thoughts' },
 ];
 
 /* --------------------------- Persistence -------------------------- */
@@ -136,16 +133,25 @@ function ring(score, size = 46) {
 function header(actionHtml = '') {
   return `<div class="app-head">
     <div class="brand">
-      <div class="mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="10"/></svg></div>
-      <div><div class="name">Stillness</div><div class="sub">Meditation Journal</div></div>
+      <div class="mark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9.5"/></svg></div>
+      <div><div class="name">Vimarsha</div><div class="sub">Meditation Journal</div></div>
     </div>
     ${actionHtml}
   </div>`;
 }
 
+function footer() {
+  return `<div class="footer fade-in">
+    <div class="lotus">🪷</div>
+    <div class="blessing">All mistakes are mine, all grace is of Maa.
+      <span class="nm">Narayani Namostute.</span></div>
+    <div class="reach">Built with devotion for the practice · <a href="mailto:keshavrmk@gmail.com">reach out</a></div>
+  </div>`;
+}
+
 function viewHome() {
   const greet = (() => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; })();
-  const quote = QUOTES[new Date().getDate() % QUOTES.length];
+  const q = QUOTES[new Date().getDate() % QUOTES.length];
   const sessions = [...state.sessions].sort((a, b) => (b.date + b.created).localeCompare(a.date + a.created));
   const total = sessions.length;
   const avgWell = total ? Math.round(sessions.reduce((s, x) => s + wellbeing(x), 0) / total) : 0;
@@ -162,7 +168,7 @@ function viewHome() {
   <div class="card hero fade-in">
     <div class="greet">${greet}, Keshav</div>
     <h1>How was your practice?</h1>
-    <div class="quote">“${quote}”</div>
+    <div class="quote">“${q.text}”<span class="cite">— ${q.by}</span></div>
     <button class="cta" data-act="new"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Begin a session</button>
   </div>
 
@@ -173,7 +179,8 @@ function viewHome() {
   </div>
 
   <div class="section-label">Recent sessions</div>
-  <div class="card fade-in">${list}</div>`;
+  <div class="card fade-in">${list}</div>
+  ${footer()}`;
 }
 
 function entryHtml(s) {
@@ -292,7 +299,8 @@ function viewStretches() {
   return header() + `
     <div class="section-label">Post-meditation stretches</div>
     <p class="stretch-intro">Ease back into the day. Move slowly, breathe through each one, and never force a stretch.</p>
-    ${cards}`;
+    ${cards}
+    ${footer()}`;
 }
 
 /* ---------------------------- Insights ---------------------------- */
@@ -349,7 +357,8 @@ function viewInsights() {
         <button class="btn-secondary" data-act="import">Import backup</button>
       </div>
       <input type="file" id="import-file" accept="application/json" hidden>
-    </div>`;
+    </div>
+    ${footer()}`;
 }
 function avgBox(k, v, max) {
   return `<div class="avg"><div class="k">${k}</div><div class="v">${v}<small style="font-size:.6em;color:var(--muted)"> /${max}</small></div>

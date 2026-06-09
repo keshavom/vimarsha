@@ -3,11 +3,11 @@
 (function (global) {
   const S = (inner) =>
     `<svg viewBox="0 0 240 190" role="img" aria-hidden="true" fill="none"
-       stroke="#cfd4ff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
-       <line x1="20" y1="168" x2="220" y2="168" stroke="#5a63a8" stroke-width="3" />
+       stroke="#6f6257" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+       <line x1="20" y1="168" x2="220" y2="168" stroke="#cdbba3" stroke-width="3" />
        ${inner}</svg>`;
 
-  const ACCENT = '#a892ff';
+  const ACCENT = '#e0633a';
 
   const NECK = S(`
     <circle cx="120" cy="52" r="22" />
