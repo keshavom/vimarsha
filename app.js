@@ -145,7 +145,7 @@ function footer() {
     <div class="lotus">🪷</div>
     <div class="blessing">All mistakes are mine, all grace is of Maa.
       <span class="nm">Narayani Namostute.</span></div>
-    <div class="reach">Built with devotion for the practice · <a href="mailto:keshavrmk@gmail.com">reach out</a></div>
+    <div class="reach">Built with devotion for the practice<a href="mailto:keshavrmk@gmail.com">reach out</a></div>
   </div>`;
 }
 
