@@ -309,20 +309,30 @@ function aspectHtml(g, a, val) {
 }
 
 /* ---------------------------- Stretches --------------------------- */
+function stretchCard(st) {
+  return `<div class="card stretch-card fade-in">
+    <div class="video">
+      <iframe src="https://www.youtube-nocookie.com/embed/${st.yt}?rel=0"
+        title="${esc(st.name)} — ${esc(st.channel)}" loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+    </div>
+    <div class="stretch-body">
+      <div class="sh"><h3>${esc(st.name)}</h3><span class="dur">${esc(st.duration)}</span></div>
+      <div class="target"><em>${esc(st.sanskrit)}</em> · ${esc(st.target)}</div>
+      <ol>${st.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
+      <div class="credit">🎥 Video by <strong>${esc(st.channel)}</strong>
+        · <a href="https://youtu.be/${st.yt}" target="_blank" rel="noopener">Watch on YouTube ↗</a></div>
+    </div>
+  </div>`;
+}
+
 function viewStretches() {
-  const cards = STRETCHES.map((st) => `
-    <div class="card stretch-card fade-in">
-      <div class="illus">${st.svg}</div>
-      <div class="stretch-body">
-        <div class="sh"><h3>${esc(st.name)}</h3><span class="dur">${esc(st.duration)}</span></div>
-        <div class="target">${esc(st.target)}</div>
-        <ol>${st.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
-      </div>
-    </div>`).join('');
   return header() + `
     <div class="section-label">Post-meditation stretches</div>
-    <p class="stretch-intro">Ease back into the day. Move slowly, breathe through each one, and never force a stretch.</p>
-    ${cards}
+    <p class="stretch-intro">Ease back into the day. Move slowly, breathe through each one, and never force a stretch. Tap any video to play it right here.</p>
+    ${STRETCHES.map(stretchCard).join('')}
     ${footer()}`;
 }
 
@@ -418,13 +428,13 @@ function showNameSheet(isFirst) {
 function showStretchSheet(score) {
   const picks = [...STRETCHES].sort(() => 0.5 - Math.random()).slice(0, 3);
   const cards = picks.map((st) => `
-    <div class="card stretch-card" style="margin-top:12px">
-      <div class="illus">${st.svg}</div>
-      <div class="stretch-body">
-        <div class="sh"><h3>${esc(st.name)}</h3><span class="dur">${esc(st.duration)}</span></div>
-        <ol>${st.steps.slice(0, 3).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
-      </div>
-    </div>`).join('');
+    <a class="stretch-mini" href="https://youtu.be/${st.yt}" target="_blank" rel="noopener">
+      <span class="thumb"><img loading="lazy" src="https://img.youtube.com/vi/${st.yt}/hqdefault.jpg" alt="${esc(st.name)}"><span class="play">▶</span></span>
+      <span class="mini-body">
+        <span class="mt">${esc(st.name)}</span>
+        <span class="ms">${esc(st.channel)} · ${esc(st.duration)}</span>
+      </span>
+    </a>`).join('');
   const sheet = document.createElement('div');
   sheet.className = 'scrim';
   sheet.innerHTML = `<div class="sheet" role="dialog">

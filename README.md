@@ -4,8 +4,9 @@
 
 A calm, mobile-first journal inspired by a paper meditation log and the gentle,
 warm aesthetic of [os.me](https://os.me). Reflect on each session **0–10** on a
-tap-bar, watch your totals add up live, and unwind afterward with guided,
-illustrated **post-meditation stretches**. Works offline, installs to the home
+tap-bar, watch your totals add up live, and unwind afterward with guided
+**post-meditation stretch videos** (embedded from YouTube, with creator credits).
+Works offline-first, installs to the home
 screen, and runs entirely as static files — perfect for free GitHub Pages hosting.
 
 > *“Ultimately, meditation is silence and presence of the mind.”* — Om Swami, *A Million Thoughts*
@@ -14,7 +15,7 @@ screen, and runs entirely as static files — perfect for free GitHub Pages host
 - **Quality** (6 aspects · /60), **Blocks** (6 aspects · /60), **Off the cushion** (5 aspects · /50)
 - 0–10 tap selector for every aspect with running totals + a normalised wellbeing score
 - **You name your own sessions** — pick a preset (Morning / Afternoon / Evening / Night) or type anything
-- Illustrated stretch library + a post-session stretch reminder
+- Embedded YouTube stretch videos (Cat-Cow, Child's Pose, Cobra, Supine Twist, Knees-to-Chest, Hip Thrusts) with credits, plus a post-session reminder
 - Insights: trend bars + averages across recent sessions
 - Export / import (JSON + CSV) — data stays on each person's device by default
 
