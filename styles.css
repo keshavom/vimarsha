@@ -114,7 +114,7 @@ input,textarea,select{font-family:inherit}
 .hero .verse{margin:18px auto 4px;max-width:32ch}
 .hero .verse .sa{font-family:"Noto Serif Devanagari",var(--serif);font-size:1.4rem;color:var(--brand-2);line-height:1.55;letter-spacing:.01em;font-weight:600}
 .hero .verse .tr{font-family:var(--sans);font-style:normal;font-weight:500;font-size:.86rem;color:#7a5a48;margin-top:7px;letter-spacing:.06em}
-.hero .verse .meaning{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;margin-top:12px;line-height:1.6;text-transform:capitalize}
+.hero .verse .meaning{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;margin-top:12px;line-height:1.6}
 .hero .verse .cite{display:block;font-style:normal;font-size:.7rem;letter-spacing:.08em;color:var(--muted);margin-top:9px;text-transform:uppercase;font-family:var(--sans)}
 .hero .cta{
   margin-top:20px;display:inline-flex;align-items:center;gap:9px;

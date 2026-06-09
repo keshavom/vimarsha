@@ -43,7 +43,7 @@ const LABEL_PRESETS = ['Morning', 'Afternoon', 'Evening', 'Night'];
 const VERSE = {
   sa: 'ध्यान ध्यातृ ध्येयरूपा',
   tr: 'Dhyāna Dhyātṛ Dhyeyarūpā',
-  meaning: 'She is the meditation,<br>the one who meditates,<br>and that on which one meditates.',
+  meaning: 'She is the meditation,<br>The one who meditates,<br>And that on which one meditates.',
   by: 'Lalitā Sahasranāma · nāma 254',
 };
 
