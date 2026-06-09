@@ -185,7 +185,7 @@ function viewHome() {
     <div class="verse">
       <div class="sa">${VERSE.sa}</div>
       <div class="tr">${VERSE.tr}</div>
-      <div class="meaning">“${VERSE.meaning}”</div>
+      <div class="meaning">${VERSE.meaning}</div>
       <span class="cite">— ${VERSE.by}</span>
     </div>
     <button class="cta" data-act="new"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Begin a session</button>
