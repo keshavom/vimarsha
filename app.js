@@ -470,6 +470,7 @@ function showSupportSheet() {
   sheet.className = 'scrim';
   sheet.innerHTML = `<div class="sheet" role="dialog">
     <div class="grip"></div>
+    <button class="sheet-close" data-act="close-support" aria-label="Close">&times;</button>
     <div class="sheet-emblem"><img src="logo-mark.png" alt="Vimarsha" /></div>
     <h2>Support this offering 🪷</h2>
     <p class="lead">Any amount is received with gratitude — a contribution toward keeping this practice alive.</p>

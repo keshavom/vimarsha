@@ -286,10 +286,17 @@ input,textarea,select{font-family:inherit}
 .scrim{position:fixed;inset:0;background:rgba(20,14,8,.5);backdrop-filter:blur(6px);z-index:40;opacity:0;animation:fade .2s forwards;display:flex;align-items:flex-end;justify-content:center}
 @keyframes fade{to{opacity:1}}
 .sheet{
+  position:relative;
   width:100%;max-width:560px;background:var(--bg);border:1px solid var(--line-strong);
   border-radius:26px 26px 0 0;padding:20px 18px calc(24px + var(--safe-bottom));
   max-height:88dvh;overflow:auto;animation:rise .28s cubic-bezier(.2,.8,.2,1) both;
 }
+.sheet-close{
+  position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;
+  background:var(--surface-2);border:1px solid var(--line-strong);color:var(--muted);
+  font-size:1.3rem;line-height:1;display:grid;place-items:center;z-index:2;
+}
+.sheet-close:active{transform:scale(.92)}
 @keyframes rise{from{transform:translateY(40px);opacity:.4}to{transform:translateY(0);opacity:1}}
 .sheet .grip{width:44px;height:5px;border-radius:3px;background:var(--line-strong);margin:0 auto 16px}
 .sheet h2{font-size:1.4rem;text-align:center}
