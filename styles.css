@@ -298,7 +298,7 @@ input,textarea,select{font-family:inherit}
 .footer .blessing{font-family:var(--serif);font-style:italic;font-size:1rem;color:#5b4a3c;line-height:1.6;margin-top:7px}
 .footer .blessing .nm{display:block;font-style:normal;font-weight:600;color:var(--brand-2);margin-top:6px;letter-spacing:.02em}
 .footer .blessing .nm .yantra{width:15px;height:15px;vertical-align:-2px;margin-left:7px}
-.footer .credit-note{font-size:.82rem;color:var(--muted);margin:14px auto 0;max-width:34ch;line-height:1.55}
+.footer .credit-note{font-size:.7rem;color:var(--muted);margin:14px auto 0;line-height:1.55;white-space:nowrap}
 .footer .credit-note strong{color:var(--text);font-weight:600}
 .footer .credit-note em{color:var(--brand-2);font-style:italic}
 .footer .credit-note a{color:var(--brand-2);text-decoration:underline;text-underline-offset:2px;font-weight:600}
