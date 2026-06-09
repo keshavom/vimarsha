@@ -18,7 +18,7 @@ var ASPECTS = [
 ];
 
 function headers_() {
-  var h = ['Submitted At', 'Name', 'Session Date', 'Session Name'];
+  var h = ['Submitted At', 'Session Date', 'Session Name'];
   ASPECTS.forEach(function (a) { h.push(a[0] + ' · ' + a[1]); });
   return h.concat(['Quality /60', 'Blocks /60', 'Off-cushion /50', 'Wellbeing /100', 'Notes', 'Entry ID', 'Device']);
 }
@@ -46,7 +46,7 @@ function doPost(e) {
     var q = sum_(r, 'quality'), b = sum_(r, 'blocks'), m = sum_(r, 'maintain');
     var wellbeing = Math.round(((q + m + (60 - b)) / 170) * 100);
 
-    var row = [d.submittedAt || new Date().toISOString(), d.userName || '', d.date || '', d.label || ''];
+    var row = [d.submittedAt || new Date().toISOString(), d.date || '', d.label || ''];
     ASPECTS.forEach(function (a) {
       var v = r[a[0]] && r[a[0]][a[1]];
       row.push((typeof v === 'number') ? v : '');

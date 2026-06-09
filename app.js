@@ -471,7 +471,6 @@ function saveDraft() {
   d.label = ($('#f-label')?.value || '').trim() || 'Session';
   d.date = $('#f-date')?.value || todayISO();
   d.notes = ($('#f-notes')?.value || '').trim();
-  d.userName = state.name || '';
 
   const idx = state.sessions.findIndex((s) => s.id === d.id);
   if (idx >= 0) state.sessions[idx] = d; else state.sessions.push(d);
