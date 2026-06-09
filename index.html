@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e1230" />
+  <title>Stillness · Meditation Journal</title>
+  <meta name="description" content="A calm daily meditation journal. Rate each session 0–10, track your totals, and unwind with guided post-meditation stretches." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%237c6cff'/><circle cx='50' cy='50' r='22' fill='none' stroke='white' stroke-width='5'/></svg>" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%237c6cff'/><circle cx='50' cy='50' r='22' fill='none' stroke='white' stroke-width='5'/></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- App shell is rendered by app.js -->
+  </div>
+
+  <nav class="tabbar" id="tabbar" hidden>
+    <button class="tab" data-view="home" aria-label="Home">
+      <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="tab" data-view="session" aria-label="New session">
+      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      <span>Log</span>
+    </button>
+    <button class="tab" data-view="stretches" aria-label="Stretches">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.4"/><path d="M12 8v6M7 21l5-7 5 7M6 11l6-2 6 2"/></svg>
+      <span>Stretches</span>
+    </button>
+    <button class="tab" data-view="insights" aria-label="Insights">
+      <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      <span>Insights</span>
+    </button>
+  </nav>
+
+  <script src="stretches.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

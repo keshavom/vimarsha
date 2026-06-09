@@ -1,0 +1,25 @@
+{
+  "name": "Stillness — Meditation Journal",
+  "short_name": "Stillness",
+  "description": "A calm daily meditation journal with 0–10 ratings, totals, and guided post-meditation stretches.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b0e25",
+  "theme_color": "#0e1230",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='44' fill='%237c6cff'/%3E%3Ccircle cx='96' cy='96' r='40' fill='none' stroke='white' stroke-width='9'/%3E%3Ccircle cx='96' cy='96' r='18' fill='white'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='116' fill='%237c6cff'/%3E%3Ccircle cx='256' cy='256' r='106' fill='none' stroke='white' stroke-width='24'/%3E%3Ccircle cx='256' cy='256' r='48' fill='white'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
