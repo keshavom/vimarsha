@@ -1,6 +1,6 @@
 /* Vimarsha service worker — network-first (always fresh online), cache fallback for offline.
    Bump CACHE to force-refresh caches on a breaking change. */
-const CACHE = 'vimarsha-v2';
+const CACHE = 'vimarsha-v3';
 const SHELL = [
   './', 'index.html', 'styles.css', 'config.js', 'stretches.js', 'app.js',
   'manifest.json', 'logo-mark.png', 'icon-512.png', 'hero.svg', 'upi-qr.png',

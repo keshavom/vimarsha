@@ -3,7 +3,7 @@
    can be enabled via config.js (see README). */
 
 /* ----------------------------- Config ----------------------------- */
-const UPI = { vpa: '7780408419@axl', name: 'Vimarsha' };
+const UPI = { vpa: 'keshavrmk@okhdfcbank', name: 'Vimarsha' };
 const CONFIG = window.VIMARSHA_CONFIG || window.STILLNESS_CONFIG || {
   collectEndpoint: null, // optional URL that accepts a POST of one session (e.g. Google Apps Script / Formspree)
 };
