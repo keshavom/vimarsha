@@ -490,6 +490,11 @@ function showSupportSheet() {
       <img src="upi-qr.png" alt="UPI QR code for ${UPI.vpa}" />
       <div class="qr-cap">On a computer? Scan this with any UPI app.</div>
     </div>
+    <div class="support-alt"><span>Outside India?</span></div>
+    <a class="paypal-btn" href="https://paypal.me/keshavom" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
+      Donate via PayPal
+    </a>
     <div class="save-bar" style="position:static;margin-top:16px">
       <button class="btn-secondary" style="flex:1" data-act="close-support">Done</button>
     </div>
