@@ -180,7 +180,10 @@ input,textarea,select{font-family:inherit}
 .aspect{padding:14px 0;border-top:1px solid var(--line)}
 .aspect:first-of-type{border-top:none}
 .aspect-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.aspect-name-wrap{min-width:0;flex:1;padding-right:10px}
 .aspect-name{font-size:.96rem;font-weight:550;display:flex;align-items:center;gap:6px}
+.aspect-info{font-size:.72rem;color:var(--muted);margin-top:2px;line-height:1.35;font-style:italic}
+.group .other-reason{margin-top:14px;padding-top:15px;border-top:1px solid var(--line);margin-bottom:0}
 .aspect-name .info{
   width:17px;height:17px;border-radius:50%;border:1px solid var(--line-strong);
   font-size:.62rem;color:var(--muted);display:grid;place-items:center;cursor:help;font-style:italic;

@@ -223,7 +223,7 @@ function entryHtml(s) {
 function startDraft(existing) {
   state.draft = existing
     ? JSON.parse(JSON.stringify(existing))
-    : { id: uid(), date: todayISO(), label: 'Morning', created: new Date().toISOString(), ratings: emptyRatings(), notes: '' };
+    : { id: uid(), date: todayISO(), label: 'Morning', created: new Date().toISOString(), ratings: emptyRatings(), notes: '', otherReason: '' };
   go('session');
 }
 
@@ -245,6 +245,10 @@ function viewSession() {
       </div>
       <div class="group-sub">${g.subtitle} · <span class="pol ${g.polarity}">${g.hint}</span></div>
       ${aspects}
+      ${g.id === 'blocks' ? `<div class="field other-reason">
+        <label>Other reason — what was it? (optional)</label>
+        <textarea id="f-other" placeholder="Describe anything else that got in the way today…">${esc(d.otherReason || '')}</textarea>
+      </div>` : ''}
     </div>`;
   }).join('');
 
@@ -288,14 +292,15 @@ function aspectHtml(g, a, val) {
     const fill = val != null && i <= val && i > 0 ? 'fill' : '';
     const head = val === i ? 'head' : '';
     const zero = i === 0 ? 'zero' : '';
-    const z = i === 0 && val !== 0 ? '·' : i;
-    segs.push(`<button class="seg ${fill} ${head} ${zero}" data-rate="${g.id}|${a.k}|${i}" aria-label="${i}">${z}</button>`);
+    segs.push(`<button class="seg ${fill} ${head} ${zero}" data-rate="${g.id}|${a.k}|${i}" aria-label="${i}">${i}</button>`);
   }
-  const info = a.info ? `<span class="info" title="${esc(a.info)}">i</span>` : '';
   const disp = val == null ? `<span class="aspect-val unset">–</span>` : `<span class="aspect-val" data-val="${g.id}|${a.k}">${val}</span>`;
   return `<div class="aspect">
     <div class="aspect-top">
-      <div class="aspect-name">${esc(a.k)}${info}</div>
+      <div class="aspect-name-wrap">
+        <div class="aspect-name">${esc(a.k)}</div>
+        ${a.info ? `<div class="aspect-info">${esc(a.info)}</div>` : ''}
+      </div>
       ${disp}
     </div>
     <div class="bar ${g.polarity}" data-bar="${g.id}|${a.k}">${segs.join('')}</div>
@@ -471,6 +476,7 @@ function saveDraft() {
   d.label = ($('#f-label')?.value || '').trim() || 'Session';
   d.date = $('#f-date')?.value || todayISO();
   d.notes = ($('#f-notes')?.value || '').trim();
+  d.otherReason = ($('#f-other')?.value || '').trim();
 
   const idx = state.sessions.findIndex((s) => s.id === d.id);
   if (idx >= 0) state.sessions[idx] = d; else state.sessions.push(d);
@@ -504,12 +510,13 @@ function download(name, text, type) {
 function exportCSV() {
   const cols = ['date', 'label'];
   GROUPS.forEach((g) => g.aspects.forEach((a) => cols.push(`${g.id}:${a.k}`)));
-  cols.push('quality_total', 'blocks_total', 'maintain_total', 'wellbeing', 'notes');
+  cols.push('quality_total', 'blocks_total', 'maintain_total', 'wellbeing', 'other_reason', 'notes');
   const rows = [cols.join(',')];
   state.sessions.forEach((s) => {
     const r = [s.date, `"${(s.label || '').replace(/"/g, '""')}"`];
     GROUPS.forEach((g) => g.aspects.forEach((a) => r.push(s.ratings?.[g.id]?.[a.k] ?? '')));
     r.push(groupTotal(s.ratings, GROUPS[0]), groupTotal(s.ratings, GROUPS[1]), groupTotal(s.ratings, GROUPS[2]), wellbeing(s));
+    r.push(`"${(s.otherReason || '').replace(/"/g, '""')}"`);
     r.push(`"${(s.notes || '').replace(/"/g, '""')}"`);
     rows.push(r.join(','));
   });

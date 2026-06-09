@@ -20,7 +20,7 @@ var ASPECTS = [
 function headers_() {
   var h = ['Submitted At', 'Session Date', 'Session Name'];
   ASPECTS.forEach(function (a) { h.push(a[0] + ' · ' + a[1]); });
-  return h.concat(['Quality /60', 'Blocks /60', 'Off-cushion /50', 'Wellbeing /100', 'Notes', 'Entry ID', 'Device']);
+  return h.concat(['Quality /60', 'Blocks /60', 'Off-cushion /50', 'Wellbeing /100', 'Other reason (text)', 'Notes', 'Entry ID', 'Device']);
 }
 
 function sum_(ratings, group) {
@@ -51,7 +51,7 @@ function doPost(e) {
       var v = r[a[0]] && r[a[0]][a[1]];
       row.push((typeof v === 'number') ? v : '');
     });
-    row.push(q, b, m, wellbeing, d.notes || '', d.id || '', d.ua || '');
+    row.push(q, b, m, wellbeing, d.otherReason || '', d.notes || '', d.id || '', d.ua || '');
     sh.appendRow(row);
 
     return ContentService.createTextOutput(JSON.stringify({ ok: true }))
