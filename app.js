@@ -57,13 +57,20 @@ function persist() { localStorage.setItem(LS_KEY, JSON.stringify(state.sessions)
 
 /* ----------------------------- State ------------------------------ */
 const NAME_KEY = 'vimarsha.name';
+const THEME_KEY = 'vimarsha.theme';
 const state = {
   view: 'home',
   sessions: load(),
   draft: null,
   name: localStorage.getItem(NAME_KEY) || '',
+  dark: localStorage.getItem(THEME_KEY) === 'dark',
 };
 function setName(n) { state.name = (n || '').trim().slice(0, 40); localStorage.setItem(NAME_KEY, state.name); }
+function applyTheme() {
+  document.documentElement.classList.toggle('dark', state.dark);
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', state.dark ? '#161311' : '#fbf6ee');
+}
 
 /* --------------------------- Utilities ---------------------------- */
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -142,7 +149,12 @@ function header(actionHtml = '') {
       <div class="mark"><img src="logo-mark.png" alt="Vimarsha" /></div>
       <div><div class="name">Vimarsha</div><div class="sub">Meditation Journal</div></div>
     </div>
-    ${actionHtml}
+    <div class="head-actions">
+      ${actionHtml}
+      <button class="icon-btn" data-act="toggle-theme" aria-label="Toggle dark mode">${state.dark
+        ? '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>'
+        : '<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'}</button>
+    </div>
   </div>`;
 }
 
@@ -568,6 +580,11 @@ document.addEventListener('click', (e) => {
   if (!act) return;
   switch (act) {
     case 'new': startDraft(); break;
+    case 'toggle-theme':
+      state.dark = !state.dark;
+      localStorage.setItem(THEME_KEY, state.dark ? 'dark' : 'light');
+      applyTheme(); render();
+      break;
     case 'edit-name': showNameSheet(false); break;
     case 'home': state.draft = null; go('home'); break;
     case 'save': saveDraft(); break;
@@ -602,4 +619,5 @@ document.addEventListener('change', (e) => {
 });
 
 /* ----------------------------- Boot ------------------------------- */
+applyTheme();
 render();
