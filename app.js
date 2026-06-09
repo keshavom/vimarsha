@@ -149,9 +149,11 @@ function footer() {
     <div class="lotus">🪷</div>
     <p class="credit-note">This way of journaling is drawn from <strong>Om Swami’s</strong>
       <a href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener"><em>A Million Thoughts</em></a>.</p>
-    <p class="offering">This humble effort is offered unto Maa’s lotus feet.</p>
+    <p class="offering">This humble effort is offered unto Maa’s Lotus Feet.</p>
     <div class="blessing">All mistakes are mine, all grace is of Maa.
-      <span class="nm">Narayani Namostute</span></div>
+      <span class="nm">Narayani Namostute
+        <svg class="yantra" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5 L20 6.5 L12 20 Z" fill="none" stroke="#c8102e" stroke-width="1.7" stroke-linejoin="round"/><circle cx="12" cy="11" r="1.7" fill="#c8102e"/></svg>
+      </span></div>
     <div class="footer-actions">
       <a class="ghost-btn" href="mailto:keshavrmk@gmail.com">
         <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out
