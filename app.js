@@ -326,7 +326,7 @@ function viewSession() {
       <div class="tot"><div class="v" data-tot="maintain">${groupTotal(d.ratings, GROUPS[2])}<small> /50</small></div><div class="k">Off-cushion</div></div>
     </div>
 
-    <div class="save-bar fade-in">
+    <div class="save-bar save-bar-float fade-in">
       <button class="btn-secondary" data-act="clear-session">Clear</button>
       ${isEdit ? `<button class="btn-secondary" data-act="delete">Delete</button>` : ''}
       <button class="btn-primary" data-act="save">${isEdit ? 'Update session' : 'Save session'}</button>

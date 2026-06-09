@@ -237,6 +237,7 @@ input,textarea,select{font-family:inherit}
 .tot .k{font-size:.7rem;color:var(--muted);margin-top:6px;letter-spacing:.03em}
 
 .save-bar{position:sticky;bottom:calc(98px + var(--safe-bottom));z-index:5;display:flex;gap:10px;margin-top:8px}
+.save-bar-float{padding:8px;border-radius:18px;background:var(--tabbar-bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .btn-primary{
   flex:1;background:var(--brand);color:#fff;
   font-weight:650;font-size:1rem;padding:16px;border-radius:16px;
