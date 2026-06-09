@@ -150,8 +150,8 @@ function footer() {
     <div class="blessing">All mistakes are mine, all grace is of Maa.
       <span class="nm">Narayani Namostute</span></div>
     <p class="credit-note">This way of journaling is drawn from <strong>Om Swami’s</strong>
-      <a href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener"><em>A Million Thoughts</em></a>.
-      This humble effort is offered unto Maa’s lotus feet.</p>
+      <a href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener"><em>A Million Thoughts</em></a>.</p>
+    <p class="offering">This humble effort is offered unto Maa’s lotus feet.</p>
     <div class="footer-actions">
       <a class="ghost-btn" href="mailto:keshavrmk@gmail.com">
         <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg> Reach out

@@ -295,6 +295,7 @@ input,textarea,select{font-family:inherit}
 .footer .credit-note strong{color:var(--text);font-weight:600}
 .footer .credit-note em{color:var(--brand-2);font-style:italic}
 .footer .credit-note a{color:var(--brand-2);text-decoration:underline;text-underline-offset:2px;font-weight:600}
+.footer .offering{font-family:var(--serif);font-style:italic;font-size:.9rem;color:var(--brand-2);margin:8px auto 0;max-width:34ch}
 .footer-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
 .footer-actions .ghost-btn{color:var(--brand-2);text-decoration:none}
 .footer .lotus{font-size:1.3rem;margin-bottom:8px}
