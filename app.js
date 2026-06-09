@@ -180,7 +180,7 @@ function viewHome() {
   return header() + `
   <div class="card hero fade-in">
     <div class="hero-emblem"><img src="hero.svg" alt="Vimarsha — a hand offering a red lotus" /></div>
-    <div class="greet">Jai Shree Hari, Sadhak</div>
+    <div class="greet">Jai Shree Hari</div>
     <h1>How was your practice?</h1>
     <div class="verse">
       <div class="sa">${VERSE.sa}</div>
