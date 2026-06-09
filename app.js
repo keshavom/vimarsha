@@ -480,7 +480,12 @@ function showSupportSheet() {
     <div class="sheet-emblem"><img src="logo-mark.png" alt="Vimarsha" /></div>
     <h2>Support this offering 🪷</h2>
     <p class="lead">Any amount is received with gratitude — a contribution toward keeping this practice alive.</p>
-    <a class="btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:6px"
+    <a class="paypal-btn" href="https://paypal.me/keshavom" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
+      Donate via PayPal
+    </a>
+    <div class="support-alt"><span>In India? Pay via UPI</span></div>
+    <a class="btn-primary" style="display:block;text-align:center;text-decoration:none"
        href="upi://pay?pa=${UPI.vpa}&amp;pn=Vimarsha&amp;cu=INR">Pay via any UPI app</a>
     <div class="upi-id">
       <span class="v">${UPI.vpa}</span>
@@ -490,11 +495,6 @@ function showSupportSheet() {
       <img src="upi-qr.png" alt="UPI QR code for ${UPI.vpa}" />
       <div class="qr-cap">On a computer? Scan this with any UPI app.</div>
     </div>
-    <div class="support-alt"><span>Outside India?</span></div>
-    <a class="paypal-btn" href="https://paypal.me/keshavom" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg>
-      Donate via PayPal
-    </a>
     <div class="save-bar" style="position:static;margin-top:16px">
       <button class="btn-secondary" style="flex:1" data-act="close-support">Done</button>
     </div>
