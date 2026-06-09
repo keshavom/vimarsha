@@ -218,7 +218,7 @@ function viewHome() {
   return header() + `
   <div class="card hero fade-in">
     <div class="hero-emblem"><img src="hero.svg" alt="Vimarsha — a hand offering a red lotus" /></div>
-    <div class="greet">Jai Shree Hari</div>
+    <div class="greet">Namaskaram${state.name ? ', ' + esc(state.name) : ''}</div>
     <h1>How was your practice?</h1>
     <div class="verse">
       <div class="sa">${VERSE.sa}</div>
@@ -297,6 +297,10 @@ function viewSession() {
   return header(`<button class="ghost-btn" data-act="home"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Back</button>`) + `
     <div class="card session-head fade-in">
       <div class="field">
+        <label>Your name (optional)</label>
+        <input type="text" id="f-name" placeholder="So your reflections stay yours" value="${esc(d.userName || state.name || '')}" autocomplete="name">
+      </div>
+      <div class="field">
         <label>Date</label>
         <input type="date" id="f-date" value="${d.date}" max="${todayISO()}">
       </div>
@@ -323,6 +327,7 @@ function viewSession() {
     </div>
 
     <div class="save-bar fade-in">
+      <button class="btn-secondary" data-act="clear-session">Clear</button>
       ${isEdit ? `<button class="btn-secondary" data-act="delete">Delete</button>` : ''}
       <button class="btn-primary" data-act="save">${isEdit ? 'Update session' : 'Save session'}</button>
     </div>`;
@@ -592,6 +597,8 @@ function saveDraft() {
   d.date = $('#f-date')?.value || todayISO();
   d.notes = ($('#f-notes')?.value || '').trim();
   d.otherReason = ($('#f-other')?.value || '').trim();
+  d.userName = ($('#f-name')?.value || '').trim();
+  if (d.userName) setName(d.userName);
 
   const idx = state.sessions.findIndex((s) => s.id === d.id);
   if (idx >= 0) state.sessions[idx] = d; else state.sessions.push(d);
@@ -623,12 +630,12 @@ function download(name, text, type) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function exportCSV() {
-  const cols = ['date', 'label'];
+  const cols = ['date', 'name', 'label'];
   GROUPS.forEach((g) => g.aspects.forEach((a) => cols.push(`${g.id}:${a.k}`)));
   cols.push('quality_total', 'blocks_total', 'maintain_total', 'wellbeing', 'other_reason', 'notes');
   const rows = [cols.join(',')];
   state.sessions.forEach((s) => {
-    const r = [s.date, `"${(s.label || '').replace(/"/g, '""')}"`];
+    const r = [s.date, `"${(s.userName || '').replace(/"/g, '""')}"`, `"${(s.label || '').replace(/"/g, '""')}"`];
     GROUPS.forEach((g) => g.aspects.forEach((a) => r.push(s.ratings?.[g.id]?.[a.k] ?? '')));
     r.push(groupTotal(s.ratings, GROUPS[0]), groupTotal(s.ratings, GROUPS[1]), groupTotal(s.ratings, GROUPS[2]), wellbeing(s));
     r.push(`"${(s.otherReason || '').replace(/"/g, '""')}"`);
@@ -686,6 +693,15 @@ document.addEventListener('click', (e) => {
       break;
     case 'edit-name': showNameSheet(false); break;
     case 'support': showSupportSheet(); break;
+    case 'clear-session':
+      if (confirm('Clear all ratings and notes for this session? (Date, name and session label stay.)')) {
+        state.draft.ratings = emptyRatings();
+        state.draft.notes = '';
+        state.draft.otherReason = '';
+        toast('Session cleared');
+        render();
+      }
+      break;
     case 'install':
       if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.finally(() => { deferredPrompt = null; }); }
       else showInstallSheet();
