@@ -177,6 +177,13 @@ input,textarea,select{font-family:inherit}
   background:var(--surface-2);border:1px solid var(--line-strong);color:var(--text);
   font-size:1rem;outline:none;
 }
+/* iOS Safari renders date inputs with its own height/alignment — normalise it */
+.field input[type=date]{
+  -webkit-appearance:none;appearance:none;
+  min-height:50px;line-height:1.4;text-align:left;display:block;
+}
+.field input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+.field input[type=date]::-webkit-calendar-picker-indicator{opacity:.55;margin-left:auto}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px var(--brand-soft)}
 .field textarea{resize:vertical;min-height:64px}
 
