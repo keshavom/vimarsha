@@ -229,8 +229,51 @@ input,textarea,select{font-family:inherit}
 .bar.neg .seg.fill{background:var(--warn);color:#fff;border-color:transparent}
 .seg.head{box-shadow:0 0 0 2px rgba(0,0,0,.18) inset}
 
+/* ---------- End-of-day reflection card (home) ---------- */
+.day-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface);border:1px solid var(--line-strong);
+  border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);
+}
+.day-card:active{transform:scale(.99)}
+.day-card .day-ico{
+  flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;
+  background:var(--brand-soft);border:1px solid var(--line);
+}
+.day-card .day-ico svg{width:22px;height:22px;fill:none;stroke:var(--brand-2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.day-card .day-body{flex:1;min-width:0}
+.day-card .day-t{font-weight:650;font-size:.98rem;color:var(--text)}
+.day-card .day-d{font-size:.78rem;color:var(--muted);margin-top:2px;line-height:1.4}
+.day-card .day-cta{flex:none;background:var(--brand);color:#fff;font-weight:700;font-size:.84rem;padding:9px 16px;border-radius:999px}
+.day-card .day-edit{flex:none;color:var(--brand-2);font-weight:700;font-size:.82rem;border:1px solid var(--line-strong);padding:8px 14px;border-radius:999px}
+.day-card.done{border-color:var(--line)}
+.day-card.done .day-ico{background:rgba(79,158,120,.12)}
+.day-card.done .day-ico svg{stroke:var(--good)}
+
+/* reflection intro card */
+.reflect-intro{text-align:center;border:1px solid var(--line-strong)}
+.reflect-emblem{
+  width:64px;height:64px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;
+  background:var(--brand-soft);border:1px solid var(--line);
+}
+.reflect-emblem svg{width:30px;height:30px;fill:none;stroke:var(--brand-2);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.reflect-intro h1{font-size:1.6rem;margin:0}
+.reflect-lead{color:var(--muted);font-size:.9rem;margin:8px auto 0;max-width:38ch;line-height:1.55}
+
+/* Send-to-Notion button */
+.notion-btn{
+  display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+  padding:11px 16px;border-radius:13px;border:1px solid var(--line-strong);
+  background:var(--surface-2);color:var(--text);font-weight:650;font-size:.88rem;
+}
+.notion-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.notion-btn:active{transform:scale(.97)}
+.notion-btn.ghost-wide{display:flex;width:100%;justify-content:center;margin-top:16px}
+
 /* totals footer of session */
 .totals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 16px}
+.totals.totals-2{grid-template-columns:repeat(2,1fr)}
+.totals.totals-1{grid-template-columns:1fr;max-width:240px;margin-left:auto;margin-right:auto}
 .tot{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;text-align:center;box-shadow:var(--shadow-soft)}
 .tot .v{font-family:var(--serif);font-size:1.45rem;font-weight:600;line-height:1;color:var(--brand-2)}
 .tot .v small{font-size:.66rem;color:var(--muted);font-weight:600;font-family:var(--sans)}

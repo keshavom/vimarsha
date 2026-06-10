@@ -1,44 +1,48 @@
-/* Stillness — daily meditation journal
+/* Vimarsha — daily meditation journal
    Pure vanilla JS SPA. Data persists in localStorage; optional remote collection
-   can be enabled via config.js (see README). */
+   can be enabled via config.js (see README).
+
+   Two kinds of entry:
+     • Session  — what happened ON the cushion (Quality + Blocks). Log as many as you sit.
+     • Reflection — how you carried it OFF the cushion, once at day's end (one per day). */
 
 /* ----------------------------- Config ----------------------------- */
 const UPI = { vpa: 'keshavrmk@okhdfcbank', name: 'Vimarsha' };
 const CONFIG = window.VIMARSHA_CONFIG || window.STILLNESS_CONFIG || {
-  collectEndpoint: null, // optional URL that accepts a POST of one session (e.g. Google Apps Script / Formspree)
+  collectEndpoint: null, // optional URL that accepts a POST of one entry (e.g. Google Apps Script / Formspree)
 };
 
 /* ----------------------------- Model ------------------------------ */
-const GROUPS = [
-  {
-    id: 'quality', title: 'Quality', subtitle: 'During meditation',
-    polarity: 'pos', hint: 'higher is better', max: 60,
-    aspects: [
-      { k: 'Concentration' }, { k: 'Posture' }, { k: 'Mindfulness' },
-      { k: 'Alertness' },
-      { k: 'Duration', info: 'How well you sustained the full sit — staying for your intended length without cutting it short.' },
-      { k: 'Mood' },
-    ],
-  },
-  {
-    id: 'blocks', title: 'Blocks', subtitle: 'During meditation',
-    polarity: 'neg', hint: 'higher means a bigger hurdle', max: 60,
-    aspects: [
-      { k: 'Dullness' }, { k: 'Restlessness' }, { k: 'Emotions' },
-      { k: 'Thoughts' }, { k: 'Physical Pain' }, { k: 'Other reason' },
-    ],
-  },
-  {
-    id: 'maintain', title: 'Off the cushion', subtitle: 'Maintain at all other times',
-    polarity: 'pos', hint: 'higher is better', max: 50,
-    aspects: [
-      { k: 'Awareness' }, { k: 'Silence' },
-      { k: 'Primary Virtues', info: 'Compassion, discipline, gratitude, detachment' },
-      { k: 'Secondary Virtues', info: 'Faith, forgiveness, empathy, humility' },
-      { k: 'Temperament' },
-    ],
-  },
-];
+const QUALITY = {
+  id: 'quality', title: 'Quality', subtitle: 'During meditation',
+  polarity: 'pos', hint: 'higher is better', max: 60,
+  aspects: [
+    { k: 'Concentration' }, { k: 'Posture' }, { k: 'Mindfulness' },
+    { k: 'Alertness' },
+    { k: 'Duration', info: 'How well you sustained the full sit — staying for your intended length without cutting it short.' },
+    { k: 'Mood' },
+  ],
+};
+const BLOCKS = {
+  id: 'blocks', title: 'Blocks', subtitle: 'During meditation',
+  polarity: 'neg', hint: 'higher means a bigger hurdle', max: 60,
+  aspects: [
+    { k: 'Dullness' }, { k: 'Restlessness' }, { k: 'Emotions' },
+    { k: 'Thoughts' }, { k: 'Physical Pain' }, { k: 'Other reason' },
+  ],
+};
+const OFF = {
+  id: 'maintain', title: 'Off the cushion', subtitle: 'How you carried the practice through your day',
+  polarity: 'pos', hint: 'higher is better', max: 50,
+  aspects: [
+    { k: 'Awareness' }, { k: 'Silence' },
+    { k: 'Primary Virtues', info: 'Compassion, discipline, gratitude, detachment' },
+    { k: 'Secondary Virtues', info: 'Faith, forgiveness, empathy, humility' },
+    { k: 'Temperament' },
+  ],
+};
+const SIT_GROUPS = [QUALITY, BLOCKS];   // what a meditation session captures
+const ALL_GROUPS = [QUALITY, BLOCKS, OFF]; // for CSV / migration / lookups
 
 const LABEL_PRESETS = ['Morning', 'Afternoon', 'Evening', 'Night'];
 const VERSE = {
@@ -50,19 +54,23 @@ const VERSE = {
 
 /* --------------------------- Persistence -------------------------- */
 const LS_KEY = 'stillness.sessions.v1';
-function load() {
-  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+const LS_REFLECT = 'vimarsha.reflections.v1';
+function loadArr(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || []; }
   catch { return []; }
 }
 function persist() { localStorage.setItem(LS_KEY, JSON.stringify(state.sessions)); }
+function persistReflect() { localStorage.setItem(LS_REFLECT, JSON.stringify(state.reflections)); }
 
 /* ----------------------------- State ------------------------------ */
 const NAME_KEY = 'vimarsha.name';
 const THEME_KEY = 'vimarsha.theme';
 const state = {
   view: 'home',
-  sessions: load(),
-  draft: null,
+  sessions: loadArr(LS_KEY),
+  reflections: loadArr(LS_REFLECT),
+  draft: null,         // session being edited
+  reflectDraft: null,  // reflection being edited
   name: localStorage.getItem(NAME_KEY) || '',
   dark: localStorage.getItem(THEME_KEY) === 'dark',
   installDismissed: localStorage.getItem('vimarsha.installDismissed') === '1',
@@ -72,6 +80,29 @@ function applyTheme() {
   document.documentElement.classList.toggle('dark', state.dark);
   const m = document.querySelector('meta[name="theme-color"]');
   if (m) m.setAttribute('content', state.dark ? '#161311' : '#fbf6ee');
+}
+
+/* One-time migration: lift any off-cushion ratings that used to live inside a
+   session out into a per-day reflection, then drop them from the session. */
+function migrate() {
+  if (localStorage.getItem('vimarsha.migratedV2') === '1') return;
+  const byDate = new Map(state.reflections.map((r) => [r.date, r]));
+  let changed = false;
+  state.sessions.forEach((s) => {
+    const m = s.ratings && s.ratings.maintain;
+    if (m && Object.values(m).some((v) => v != null)) {
+      if (!byDate.has(s.date)) {
+        byDate.set(s.date, {
+          id: uid(), date: s.date, created: s.created || new Date().toISOString(),
+          ratings: { maintain: { ...m } }, notes: '', userName: s.userName || '', type: 'reflection',
+        });
+      }
+      changed = true;
+    }
+    if (s.ratings && 'maintain' in s.ratings) { delete s.ratings.maintain; changed = true; }
+  });
+  if (changed) { state.reflections = [...byDate.values()]; persist(); persistReflect(); }
+  localStorage.setItem('vimarsha.migratedV2', '1');
 }
 
 /* Install-to-home-screen support */
@@ -100,25 +131,32 @@ function groupTotal(ratings, g) {
 }
 function emptyRatings() {
   const r = {};
-  GROUPS.forEach((g) => { r[g.id] = {}; g.aspects.forEach((a) => { r[g.id][a.k] = null; }); });
+  SIT_GROUPS.forEach((g) => { r[g.id] = {}; g.aspects.forEach((a) => { r[g.id][a.k] = null; }); });
+  return r;
+}
+function emptyOff() {
+  const r = { maintain: {} };
+  OFF.aspects.forEach((a) => { r.maintain[a.k] = null; });
   return r;
 }
 
-/* Wellbeing score: reward quality + off-cushion, subtract blocks. Normalised 0–100. */
-function wellbeing(s) {
-  const q = groupTotal(s.ratings, GROUPS[0]);   // /60
-  const b = groupTotal(s.ratings, GROUPS[1]);   // /60
-  const m = groupTotal(s.ratings, GROUPS[2]);   // /50
-  const raw = q + m + (60 - b);                 // 0..170
-  return Math.round((raw / 170) * 100);
+/* Wellbeing of a sit: reward quality, subtract blocks. Normalised 0–100. */
+function sitWellbeing(s) {
+  const q = groupTotal(s.ratings, QUALITY);   // /60
+  const b = groupTotal(s.ratings, BLOCKS);    // /60
+  return Math.round(((q + (60 - b)) / 120) * 100);
 }
+/* Off-cushion score of a reflection, normalised 0–100. */
+function offScore(r) {
+  return Math.round((groupTotal(r.ratings, OFF) / 50) * 100);
+}
+function todayReflection() { return state.reflections.find((r) => r.date === todayISO()); }
 
 function streak() {
   if (!state.sessions.length) return 0;
   const days = new Set(state.sessions.map((s) => s.date));
   let n = 0;
   const d = new Date(todayISO() + 'T00:00:00');
-  // allow streak to count from today or yesterday
   if (!days.has(d.toISOString().slice(0, 10))) d.setDate(d.getDate() - 1);
   while (days.has(d.toISOString().slice(0, 10))) { n++; d.setDate(d.getDate() - 1); }
   return n;
@@ -202,10 +240,38 @@ function footer() {
   </div>`;
 }
 
+/* Moon glyph for the end-of-day reflection */
+function moonSvg() {
+  return '<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+}
+
+function reflectCard() {
+  const r = todayReflection();
+  if (r) {
+    const m = groupTotal(r.ratings, OFF);
+    return `<div class="day-card done fade-in" data-act="reflect-today">
+      <div class="day-ico">${moonSvg()}</div>
+      <div class="day-body">
+        <div class="day-t">Today’s reflection is logged</div>
+        <div class="day-d">Off the cushion · ${m}/50 carried through your day</div>
+      </div>
+      <span class="day-edit">Edit</span>
+    </div>`;
+  }
+  return `<div class="day-card fade-in" data-act="reflect-today">
+    <div class="day-ico">${moonSvg()}</div>
+    <div class="day-body">
+      <div class="day-t">How did you carry it off the cushion?</div>
+      <div class="day-d">A gentle end-of-day reflection — awareness, silence, virtue.</div>
+    </div>
+    <span class="day-cta">Reflect</span>
+  </div>`;
+}
+
 function viewHome() {
   const sessions = [...state.sessions].sort((a, b) => (b.date + b.created).localeCompare(a.date + a.created));
   const total = sessions.length;
-  const avgWell = total ? Math.round(sessions.reduce((s, x) => s + wellbeing(x), 0) / total) : 0;
+  const avgWell = total ? Math.round(sessions.reduce((s, x) => s + sitWellbeing(x), 0) / total) : 0;
 
   const list = total
     ? sessions.slice(0, 8).map(entryHtml).join('')
@@ -237,24 +303,25 @@ function viewHome() {
     <div class="stat"><div class="num">${avgWell}</div><div class="lbl">Avg score</div></div>
   </div>
 
+  <div class="section-label">End of day</div>
+  ${reflectCard()}
+
   <div class="section-label">Recent sessions</div>
   <div class="card fade-in">${list}</div>
   ${footer()}`;
 }
 
 function entryHtml(s) {
-  const q = groupTotal(s.ratings, GROUPS[0]);
-  const b = groupTotal(s.ratings, GROUPS[1]);
-  const m = groupTotal(s.ratings, GROUPS[2]);
+  const q = groupTotal(s.ratings, QUALITY);
+  const b = groupTotal(s.ratings, BLOCKS);
   return `<div class="entry" data-open="${s.id}">
-    ${ring(wellbeing(s))}
+    ${ring(sitWellbeing(s))}
     <div class="meta">
       <div class="t">${esc(s.label || 'Session')}</div>
       <div class="d">${fmtDate(s.date)}</div>
       <div class="chips">
         <span class="chip good">Quality ${q}/60</span>
         <span class="chip bad">Blocks ${b}/60</span>
-        <span class="chip">Off-cushion ${m}/50</span>
       </div>
     </div>
     <span class="go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -277,7 +344,7 @@ function viewSession() {
   const presets = LABEL_PRESETS.map((p) =>
     `<button class="preset ${d.label === p ? 'on' : ''}" data-preset="${p}">${p}</button>`).join('');
 
-  const groupsHtml = GROUPS.map((g) => {
+  const groupsHtml = SIT_GROUPS.map((g) => {
     const tot = groupTotal(d.ratings, g);
     const aspects = g.aspects.map((a) => aspectHtml(g, a, d.ratings[g.id][a.k])).join('');
     return `<div class="card group fade-in">
@@ -318,18 +385,80 @@ function viewSession() {
         <label>Notes (optional)</label>
         <textarea id="f-notes" placeholder="Anything you noticed today…">${esc(d.notes || '')}</textarea>
       </div>
+      <button class="notion-btn" data-act="notion-sit">${notionGlyph()} Send to Notion</button>
     </div>
 
-    <div class="totals fade-in" style="margin-top:16px">
-      <div class="tot"><div class="v" data-tot="quality">${groupTotal(d.ratings, GROUPS[0])}<small> /60</small></div><div class="k">Quality</div></div>
-      <div class="tot"><div class="v" data-tot="blocks">${groupTotal(d.ratings, GROUPS[1])}<small> /60</small></div><div class="k">Blocks</div></div>
-      <div class="tot"><div class="v" data-tot="maintain">${groupTotal(d.ratings, GROUPS[2])}<small> /50</small></div><div class="k">Off-cushion</div></div>
+    <div class="totals totals-2 fade-in" style="margin-top:16px">
+      <div class="tot"><div class="v" data-tot="quality">${groupTotal(d.ratings, QUALITY)}<small> /60</small></div><div class="k">Quality</div></div>
+      <div class="tot"><div class="v" data-tot="blocks">${groupTotal(d.ratings, BLOCKS)}<small> /60</small></div><div class="k">Blocks</div></div>
     </div>
 
     <div class="save-bar save-bar-float fade-in">
       <button class="btn-secondary" data-act="clear-session">Clear</button>
       ${isEdit ? `<button class="btn-secondary" data-act="delete">Delete</button>` : ''}
       <button class="btn-primary" data-act="save">${isEdit ? 'Update session' : 'Save session'}</button>
+    </div>`;
+}
+
+/* ------------------- End-of-day reflection editor ----------------- */
+function startReflect(existing) {
+  const base = existing || todayReflection();
+  state.reflectDraft = base
+    ? JSON.parse(JSON.stringify(base))
+    : { id: uid(), date: todayISO(), created: new Date().toISOString(), ratings: emptyOff(), notes: '', userName: state.name || '', type: 'reflection' };
+  go('reflect');
+}
+
+function viewReflect() {
+  const d = state.reflectDraft;
+  if (!d) { startReflect(); return ''; }
+  const isEdit = state.reflections.some((r) => r.id === d.id);
+  const tot = groupTotal(d.ratings, OFF);
+  const aspects = OFF.aspects.map((a) => aspectHtml(OFF, a, d.ratings.maintain[a.k])).join('');
+
+  return header(`<button class="ghost-btn" data-act="home"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg> Back</button>`) + `
+    <div class="card reflect-intro fade-in">
+      <div class="reflect-emblem">${moonSvg()}</div>
+      <h1>End of day</h1>
+      <p class="reflect-lead">The sit is one part. This is the other — how steadily you held awareness, silence, and virtue as the day moved. Reflect gently, once, before you rest.</p>
+    </div>
+
+    <div class="card session-head fade-in">
+      <div class="field">
+        <label>Your name (optional)</label>
+        <input type="text" id="rf-name" placeholder="So your reflections stay yours" value="${esc(d.userName || state.name || '')}" autocomplete="name">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Date</label>
+        <input type="date" id="rf-date" value="${d.date}" max="${todayISO()}">
+      </div>
+    </div>
+
+    <div class="card group fade-in">
+      <div class="group-head">
+        <div class="gt">${OFF.title}</div>
+        <div class="gtot" data-tot="maintain">${tot}<small style="color:var(--muted);font-weight:600"> / ${OFF.max}</small></div>
+      </div>
+      <div class="group-sub">${OFF.subtitle} · <span class="pol pos">${OFF.hint}</span></div>
+      ${aspects}
+    </div>
+
+    <div class="card fade-in">
+      <div class="field" style="margin:0">
+        <label>Notes (optional)</label>
+        <textarea id="rf-notes" placeholder="How did the day feel, off the cushion?…">${esc(d.notes || '')}</textarea>
+      </div>
+      <button class="notion-btn" data-act="notion-reflect">${notionGlyph()} Send to Notion</button>
+    </div>
+
+    <div class="totals totals-1 fade-in" style="margin-top:16px">
+      <div class="tot"><div class="v" data-tot="maintain">${tot}<small> /50</small></div><div class="k">Off the cushion</div></div>
+    </div>
+
+    <div class="save-bar save-bar-float fade-in">
+      <button class="btn-secondary" data-act="clear-reflect">Clear</button>
+      ${isEdit ? `<button class="btn-secondary" data-act="delete-reflect">Delete</button>` : ''}
+      <button class="btn-primary" data-act="save-reflect">${isEdit ? 'Update reflection' : 'Save reflection'}</button>
     </div>`;
 }
 
@@ -385,46 +514,67 @@ function viewStretches() {
 /* ---------------------------- Insights ---------------------------- */
 function viewInsights() {
   const sessions = [...state.sessions].sort((a, b) => (a.date + a.created).localeCompare(b.date + b.created));
-  if (!sessions.length) {
+  const reflections = [...state.reflections].sort((a, b) => a.date.localeCompare(b.date));
+  if (!sessions.length && !reflections.length) {
     return header() + `<div class="card fade-in"><div class="empty">
       <svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
-      <div>No data yet</div><div class="tiny">Log a few sessions to see your trends.</div></div></div>`;
+      <div>No data yet</div><div class="tiny">Log a few sessions to see your trends.</div></div></div>` + footer();
   }
+
   const last = sessions.slice(-12);
   const cols = last.map((s) => {
-    const q = groupTotal(s.ratings, GROUPS[0]) / 60;
-    const m = groupTotal(s.ratings, GROUPS[2]) / 50;
-    const b = groupTotal(s.ratings, GROUPS[1]) / 60;
+    const q = groupTotal(s.ratings, QUALITY) / 60;
+    const b = groupTotal(s.ratings, BLOCKS) / 60;
     return `<div class="col">
       <div class="bars">
         <div class="b q" style="height:${Math.max(3, q * 100)}%"></div>
-        <div class="b m" style="height:${Math.max(3, m * 100)}%"></div>
         <div class="b bl" style="height:${Math.max(3, b * 100)}%"></div>
       </div>
       <div class="lab">${new Date(s.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' })}</div>
     </div>`;
   }).join('');
 
-  const avg = (g, max) => Math.round(sessions.reduce((s, x) => s + groupTotal(x.ratings, g), 0) / sessions.length);
-  const avgQ = avg(GROUPS[0]), avgB = avg(GROUPS[1]), avgM = avg(GROUPS[2]);
-
-  return header() + `
+  const sitTrend = sessions.length ? `
     <div class="section-label">Last ${last.length} sessions</div>
     <div class="card fade-in">
       <div class="trend">${cols}</div>
       <div class="legend">
         <span><i style="background:var(--brand)"></i>Quality</span>
-        <span><i style="background:#3a8fd6"></i>Off-cushion</span>
         <span><i style="background:var(--warn)"></i>Blocks</span>
       </div>
-    </div>
+    </div>` : '';
+
+  // Off-cushion trend (reflections)
+  const lastR = reflections.slice(-12);
+  const offCols = lastR.map((r) => {
+    const m = groupTotal(r.ratings, OFF) / 50;
+    return `<div class="col">
+      <div class="bars"><div class="b m" style="height:${Math.max(3, m * 100)}%"></div></div>
+      <div class="lab">${new Date(r.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' })}</div>
+    </div>`;
+  }).join('');
+  const offTrend = reflections.length ? `
+    <div class="section-label">Off the cushion — last ${lastR.length} days</div>
+    <div class="card fade-in">
+      <div class="trend">${offCols}</div>
+      <div class="legend"><span><i style="background:var(--good)"></i>Off the cushion</span></div>
+    </div>` : '';
+
+  const avgSit = (g) => sessions.length ? Math.round(sessions.reduce((s, x) => s + groupTotal(x.ratings, g), 0) / sessions.length) : 0;
+  const avgQ = avgSit(QUALITY), avgB = avgSit(BLOCKS);
+  const avgM = reflections.length ? Math.round(reflections.reduce((s, x) => s + groupTotal(x.ratings, OFF), 0) / reflections.length) : null;
+  const avgW = sessions.length ? Math.round(sessions.reduce((s, x) => s + sitWellbeing(x), 0) / sessions.length) : 0;
+
+  return header() + `
+    ${sitTrend}
+    ${offTrend}
     <div class="section-label">Averages</div>
     <div class="card fade-in">
       <div class="avg-grid">
         ${avgBox('Quality', avgQ, 60)}
         ${avgBox('Blocks', avgB, 60)}
-        ${avgBox('Off-cushion', avgM, 50)}
-        ${avgBox('Wellbeing', Math.round(sessions.reduce((s, x) => s + wellbeing(x), 0) / sessions.length), 100)}
+        ${avgBox('Off the cushion', avgM == null ? '–' : avgM, 50)}
+        ${avgBox('Wellbeing', avgW, 100)}
       </div>
     </div>
     <div class="section-label">Your data</div>
@@ -440,8 +590,9 @@ function viewInsights() {
     ${footer()}`;
 }
 function avgBox(k, v, max) {
+  const pct = typeof v === 'number' ? Math.round((v / max) * 100) : 0;
   return `<div class="avg"><div class="k">${k}</div><div class="v">${v}<small style="font-size:.6em;color:var(--muted)"> /${max}</small></div>
-    <div class="bar-mini"><i style="width:${Math.round((v / max) * 100)}%"></i></div></div>`;
+    <div class="bar-mini"><i style="width:${pct}%"></i></div></div>`;
 }
 
 /* ----------------------------- Name sheet ------------------------- */
@@ -547,7 +698,7 @@ function showInstallSheet() {
 }
 
 /* ---------------------- Post-session stretch check ---------------- */
-function showStretchSheet(score) {
+function showStretchSheet(score, entry) {
   const sheet = document.createElement('div');
   sheet.className = 'scrim';
   sheet.innerHTML = `<div class="sheet" role="dialog">
@@ -561,9 +712,11 @@ function showStretchSheet(score) {
         <button class="choice" data-act="stretched-yes">Yes, I’ve stretched</button>
         <button class="choice" data-act="stretched-no">Not yet</button>
       </div>
+      <button class="notion-btn ghost-wide" data-act="notion-saved">${notionGlyph()} Send to Notion</button>
     </div>
   </div>`;
   sheet.addEventListener('click', (e) => {
+    if (e.target.closest('[data-act="notion-saved"]')) { sendToNotion(entry, 'session'); return; }
     if (e.target === sheet) { sheet.remove(); go('home'); return; }
     if (e.target.closest('[data-act="stretched-yes"]')) { sheet.remove(); toast('🙏 Well done'); go('home'); return; }
     if (e.target.closest('[data-act="stretched-no"]')) {
@@ -579,11 +732,111 @@ function showStretchSheet(score) {
   document.body.appendChild(sheet);
 }
 
+/* --------------------- Reflection saved sheet --------------------- */
+function showReflectSavedSheet(entry) {
+  const sheet = document.createElement('div');
+  sheet.className = 'scrim';
+  sheet.innerHTML = `<div class="sheet" role="dialog">
+    <div class="grip"></div>
+    <div class="celebrate">🌙</div>
+    <h2>Reflection saved</h2>
+    <p class="lead">Off the cushion <strong>${groupTotal(entry.ratings, OFF)}/50</strong> — rest well.</p>
+    <button class="notion-btn ghost-wide" data-act="notion-saved">${notionGlyph()} Send to Notion</button>
+    <div class="save-bar" style="position:static;margin-top:14px">
+      <button class="btn-primary" data-act="close-saved">Done</button>
+    </div>
+  </div>`;
+  sheet.addEventListener('click', (e) => {
+    if (e.target.closest('[data-act="notion-saved"]')) { sendToNotion(entry, 'reflection'); return; }
+    if (e.target === sheet || e.target.closest('[data-act="close-saved"]')) { sheet.remove(); go('home'); }
+  });
+  document.body.appendChild(sheet);
+}
+
+/* ============================== Notion ============================= */
+function notionGlyph() {
+  // simple page/arrow glyph; styled via .notion-btn svg
+  return '<svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5"/><path d="M10 13h6M10 17h4"/></svg>';
+}
+
+function entryMarkdown(e, kind) {
+  const who = (e.userName || '').trim();
+  const lines = [];
+  if (kind === 'reflection') {
+    lines.push('# 🪷 Vimarsha — End-of-day reflection');
+    lines.push(`**Date:** ${fmtDate(e.date)}${who ? `  ·  **By:** ${who}` : ''}  ·  **Off the cushion:** ${groupTotal(e.ratings, OFF)}/50 (${offScore(e)}/100)`);
+    lines.push('');
+    lines.push(`## ${OFF.title}`);
+    OFF.aspects.forEach((a) => {
+      const v = e.ratings?.maintain?.[a.k];
+      lines.push(`- ${a.k}: ${v == null ? '—' : v}/10`);
+    });
+    lines.push('');
+  } else {
+    lines.push(`# 🪷 Vimarsha — ${e.label || 'Session'}`);
+    lines.push(`**Date:** ${fmtDate(e.date)}${who ? `  ·  **By:** ${who}` : ''}  ·  **Wellbeing:** ${sitWellbeing(e)}/100`);
+    lines.push('');
+    SIT_GROUPS.forEach((g) => {
+      lines.push(`## ${g.title} (${groupTotal(e.ratings, g)}/${g.max})`);
+      g.aspects.forEach((a) => {
+        const v = e.ratings?.[g.id]?.[a.k];
+        lines.push(`- ${a.k}: ${v == null ? '—' : v}/10`);
+      });
+      lines.push('');
+    });
+    if ((e.otherReason || '').trim()) { lines.push(`**Other reason:** ${e.otherReason.trim()}`); lines.push(''); }
+  }
+  if ((e.notes || '').trim()) { lines.push('## Notes'); lines.push(e.notes.trim()); lines.push(''); }
+  lines.push('— Logged in Vimarsha · vimarsha-daily.vercel.app');
+  return lines.join('\n');
+}
+
+function sendToNotion(entry, kind) {
+  const md = entryMarkdown(entry, kind);
+  (navigator.clipboard ? navigator.clipboard.writeText(md) : Promise.reject())
+    .then(() => showNotionSheet(md, true))
+    .catch(() => showNotionSheet(md, false));
+}
+
+function showNotionSheet(md, copied) {
+  const existing = document.querySelector('.scrim.notion-scrim');
+  if (existing) existing.remove();
+  const sheet = document.createElement('div');
+  sheet.className = 'scrim notion-scrim';
+  sheet.innerHTML = `<div class="sheet" role="dialog">
+    <div class="grip"></div>
+    <button class="sheet-close" data-act="close-notion" aria-label="Close">&times;</button>
+    <div class="celebrate">${copied ? '📋' : '📝'}</div>
+    <h2>${copied ? 'Copied for Notion' : 'Copy for Notion'}</h2>
+    <p class="lead">${copied
+      ? 'Open Notion, create or open any page, and paste (⌘/Ctrl + V). It turns into a clean page automatically.'
+      : 'Select the text below, copy it, then paste it into any Notion page (⌘/Ctrl + V).'}</p>
+    ${copied ? '' : `<div class="field" style="margin:14px 2px 0"><textarea id="notion-md" readonly style="min-height:160px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem">${esc(md)}</textarea></div>`}
+    <a class="paypal-btn" style="margin-top:14px" href="https://www.notion.so/" target="_blank" rel="noopener">
+      ${notionGlyph()} Open Notion ↗
+    </a>
+    <div class="save-bar" style="position:static;margin-top:12px">
+      ${copied ? '' : '<button class="btn-secondary" style="flex:1" data-act="copy-notion">Copy text</button>'}
+      <button class="btn-primary" data-act="close-notion">Done</button>
+    </div>
+  </div>`;
+  sheet.addEventListener('click', (e) => {
+    if (e.target === sheet || e.target.closest('[data-act="close-notion"]')) { sheet.remove(); return; }
+    if (e.target.closest('[data-act="copy-notion"]')) {
+      const ta = sheet.querySelector('#notion-md');
+      ta.select(); ta.setSelectionRange(0, md.length);
+      try { document.execCommand('copy'); toast('Copied 📋'); } catch { toast('Select all & copy'); }
+    }
+  });
+  document.body.appendChild(sheet);
+}
+
 /* ============================== Router ============================= */
-const VIEWS = { home: viewHome, session: viewSession, stretches: viewStretches, insights: viewInsights };
+const VIEWS = { home: viewHome, session: viewSession, reflect: viewReflect, stretches: viewStretches, insights: viewInsights };
 function go(view) {
   state.view = view;
   if (view === 'session' && !state.draft) startDraft();
+  if (view === 'reflect' && !state.reflectDraft) startReflect();
   render();
   window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
 }
@@ -592,37 +845,64 @@ function render() {
   const tabbar = $('#tabbar');
   tabbar.hidden = false;
   tabbar.querySelectorAll('.tab').forEach((t) =>
-    t.classList.toggle('active', t.dataset.view === state.view || (state.view === 'session' && t.dataset.view === 'session')));
+    t.classList.toggle('active', t.dataset.view === state.view));
 }
 
 /* ============================== Events ============================= */
-function saveDraft() {
+function syncSitDraft() {
   const d = state.draft;
   d.label = ($('#f-label')?.value || '').trim() || 'Session';
   d.date = $('#f-date')?.value || todayISO();
   d.notes = ($('#f-notes')?.value || '').trim();
   d.otherReason = ($('#f-other')?.value || '').trim();
   d.userName = ($('#f-name')?.value || '').trim();
-  if (d.userName) setName(d.userName);
+}
+function syncReflectDraft() {
+  const d = state.reflectDraft;
+  d.date = $('#rf-date')?.value || todayISO();
+  d.notes = ($('#rf-notes')?.value || '').trim();
+  d.userName = ($('#rf-name')?.value || '').trim();
+}
 
+function saveDraft() {
+  syncSitDraft();
+  const d = state.draft;
+  if (d.userName) setName(d.userName);
   const idx = state.sessions.findIndex((s) => s.id === d.id);
   if (idx >= 0) state.sessions[idx] = d; else state.sessions.push(d);
   persist();
-  const score = wellbeing(d);
+  const score = sitWellbeing(d);
   const wasNew = idx < 0;
-  submitRemote(d); // no-op unless an endpoint is configured
+  const saved = JSON.parse(JSON.stringify(d));
+  submitRemote({ ...d, type: 'session' });
   state.draft = null;
-  if (wasNew) showStretchSheet(score);
+  if (wasNew) showStretchSheet(score, saved);
   else { toast('Session updated'); go('home'); }
 }
 
-function submitRemote(session) {
+function saveReflect() {
+  syncReflectDraft();
+  const d = state.reflectDraft;
+  if (d.userName) setName(d.userName);
+  // one reflection per calendar day — replace any other entry on the same date
+  const clash = state.reflections.find((r) => r.date === d.date && r.id !== d.id);
+  if (clash) state.reflections = state.reflections.filter((r) => r.id !== clash.id);
+  const idx = state.reflections.findIndex((r) => r.id === d.id);
+  if (idx >= 0) state.reflections[idx] = d; else state.reflections.push(d);
+  persistReflect();
+  const saved = JSON.parse(JSON.stringify(d));
+  submitRemote({ ...d, type: 'reflection' });
+  state.reflectDraft = null;
+  showReflectSavedSheet(saved);
+}
+
+function submitRemote(entry) {
   if (!CONFIG.collectEndpoint) return;
   try {
     fetch(CONFIG.collectEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight for Apps Script
-      body: JSON.stringify({ ...session, ua: navigator.userAgent, submittedAt: new Date().toISOString() }),
+      body: JSON.stringify({ ...entry, ua: navigator.userAgent, submittedAt: new Date().toISOString() }),
     }).catch(() => {});
   } catch { /* offline — already saved locally */ }
 }
@@ -636,18 +916,33 @@ function download(name, text, type) {
 }
 function exportCSV() {
   const cols = ['date', 'name', 'label'];
-  GROUPS.forEach((g) => g.aspects.forEach((a) => cols.push(`${g.id}:${a.k}`)));
-  cols.push('quality_total', 'blocks_total', 'maintain_total', 'wellbeing', 'other_reason', 'notes');
+  SIT_GROUPS.forEach((g) => g.aspects.forEach((a) => cols.push(`${g.id}:${a.k}`)));
+  cols.push('quality_total', 'blocks_total', 'wellbeing', 'other_reason', 'notes');
   const rows = [cols.join(',')];
   state.sessions.forEach((s) => {
     const r = [s.date, `"${(s.userName || '').replace(/"/g, '""')}"`, `"${(s.label || '').replace(/"/g, '""')}"`];
-    GROUPS.forEach((g) => g.aspects.forEach((a) => r.push(s.ratings?.[g.id]?.[a.k] ?? '')));
-    r.push(groupTotal(s.ratings, GROUPS[0]), groupTotal(s.ratings, GROUPS[1]), groupTotal(s.ratings, GROUPS[2]), wellbeing(s));
+    SIT_GROUPS.forEach((g) => g.aspects.forEach((a) => r.push(s.ratings?.[g.id]?.[a.k] ?? '')));
+    r.push(groupTotal(s.ratings, QUALITY), groupTotal(s.ratings, BLOCKS), sitWellbeing(s));
     r.push(`"${(s.otherReason || '').replace(/"/g, '""')}"`);
     r.push(`"${(s.notes || '').replace(/"/g, '""')}"`);
     rows.push(r.join(','));
   });
-  download('stillness-export.csv', rows.join('\n'), 'text/csv');
+  // reflections as their own block below the sits
+  if (state.reflections.length) {
+    rows.push('');
+    const rc = ['date', 'name'];
+    OFF.aspects.forEach((a) => rc.push(`maintain:${a.k}`));
+    rc.push('offcushion_total', 'notes');
+    rows.push(rc.join(','));
+    state.reflections.forEach((r) => {
+      const row = [r.date, `"${(r.userName || '').replace(/"/g, '""')}"`];
+      OFF.aspects.forEach((a) => row.push(r.ratings?.maintain?.[a.k] ?? ''));
+      row.push(groupTotal(r.ratings, OFF));
+      row.push(`"${(r.notes || '').replace(/"/g, '""')}"`);
+      rows.push(row.join(','));
+    });
+  }
+  download('vimarsha-export.csv', rows.join('\n'), 'text/csv');
 }
 
 document.addEventListener('click', (e) => {
@@ -655,7 +950,8 @@ document.addEventListener('click', (e) => {
   if (rate) {
     const [gid, k, vStr] = rate.dataset.rate.split('|');
     const v = +vStr;
-    state.draft.ratings[gid][k] = v;
+    const target = state.view === 'reflect' ? state.reflectDraft : state.draft;
+    target.ratings[gid][k] = v;
     // re-render just this group's bar + totals without full re-render (keeps scroll)
     const bar = rate.closest('.bar');
     bar.querySelectorAll('.seg').forEach((seg, i) => {
@@ -664,10 +960,10 @@ document.addEventListener('click', (e) => {
     });
     const top = rate.closest('.aspect').querySelector('.aspect-val');
     top.classList.remove('unset'); top.textContent = v; top.dataset.val = `${gid}|${k}`;
-    const tot = groupTotal(state.draft.ratings, GROUPS.find((g) => g.id === gid));
+    const tot = groupTotal(target.ratings, ALL_GROUPS.find((g) => g.id === gid));
     document.querySelectorAll(`[data-tot="${gid}"]`).forEach((el) => {
       const small = el.querySelector('small');
-      el.firstChild ? (el.childNodes[0].nodeValue = tot) : (el.textContent = tot);
+      el.childNodes[0] ? (el.childNodes[0].nodeValue = tot) : (el.textContent = tot);
       if (small) el.appendChild(small);
     });
     return;
@@ -685,12 +981,18 @@ document.addEventListener('click', (e) => {
   if (open) { const s = state.sessions.find((x) => x.id === open.dataset.open); if (s) startDraft(s); return; }
 
   const tab = e.target.closest('.tab');
-  if (tab) { if (tab.dataset.view === 'session') startDraft(); else go(tab.dataset.view); return; }
+  if (tab) {
+    if (tab.dataset.view === 'session') startDraft();
+    else if (tab.dataset.view === 'reflect') startReflect();
+    else go(tab.dataset.view);
+    return;
+  }
 
   const act = e.target.closest('[data-act]')?.dataset.act;
   if (!act) return;
   switch (act) {
     case 'new': startDraft(); break;
+    case 'reflect-today': startReflect(); break;
     case 'toggle-theme':
       state.dark = !state.dark;
       localStorage.setItem(THEME_KEY, state.dark ? 'dark' : 'light');
@@ -698,12 +1000,22 @@ document.addEventListener('click', (e) => {
       break;
     case 'edit-name': showNameSheet(false); break;
     case 'support': showSupportSheet(); break;
+    case 'notion-sit': syncSitDraft(); sendToNotion(state.draft, 'session'); break;
+    case 'notion-reflect': syncReflectDraft(); sendToNotion(state.reflectDraft, 'reflection'); break;
     case 'clear-session':
       if (confirm('Clear all ratings and notes for this session? (Date, name and session label stay.)')) {
         state.draft.ratings = emptyRatings();
         state.draft.notes = '';
         state.draft.otherReason = '';
         toast('Session cleared');
+        render();
+      }
+      break;
+    case 'clear-reflect':
+      if (confirm('Clear all ratings and notes for this reflection? (Date and name stay.)')) {
+        state.reflectDraft.ratings = emptyOff();
+        state.reflectDraft.notes = '';
+        toast('Reflection cleared');
         render();
       }
       break;
@@ -716,15 +1028,24 @@ document.addEventListener('click', (e) => {
       localStorage.setItem('vimarsha.installDismissed', '1');
       render();
       break;
-    case 'home': state.draft = null; go('home'); break;
+    case 'home': state.draft = null; state.reflectDraft = null; go('home'); break;
     case 'save': saveDraft(); break;
+    case 'save-reflect': saveReflect(); break;
     case 'delete':
       if (confirm('Delete this session?')) {
         state.sessions = state.sessions.filter((s) => s.id !== state.draft.id);
         persist(); state.draft = null; toast('Deleted'); go('home');
       }
       break;
-    case 'export-json': download('stillness-backup.json', JSON.stringify(state.sessions, null, 2), 'application/json'); break;
+    case 'delete-reflect':
+      if (confirm('Delete this reflection?')) {
+        state.reflections = state.reflections.filter((r) => r.id !== state.reflectDraft.id);
+        persistReflect(); state.reflectDraft = null; toast('Deleted'); go('home');
+      }
+      break;
+    case 'export-json':
+      download('vimarsha-backup.json', JSON.stringify({ _v: 2, sessions: state.sessions, reflections: state.reflections }, null, 2), 'application/json');
+      break;
     case 'export-csv': exportCSV(); break;
     case 'import': $('#import-file').click(); break;
   }
@@ -736,11 +1057,17 @@ document.addEventListener('change', (e) => {
     fr.onload = () => {
       try {
         const data = JSON.parse(fr.result);
-        if (!Array.isArray(data)) throw 0;
+        const incomingSessions = Array.isArray(data) ? data : (data.sessions || []);
+        const incomingReflections = Array.isArray(data) ? [] : (data.reflections || []);
         const byId = new Map(state.sessions.map((s) => [s.id, s]));
-        data.forEach((s) => byId.set(s.id, s));
+        incomingSessions.forEach((s) => byId.set(s.id, s));
         state.sessions = [...byId.values()];
-        persist(); toast(`Imported ${data.length} sessions`); go('insights');
+        const byR = new Map(state.reflections.map((r) => [r.id, r]));
+        incomingReflections.forEach((r) => byR.set(r.id, r));
+        state.reflections = [...byR.values()];
+        persist(); persistReflect();
+        toast(`Imported ${incomingSessions.length} sessions${incomingReflections.length ? ` · ${incomingReflections.length} reflections` : ''}`);
+        go('insights');
       } catch { toast('Could not read that file'); }
     };
     fr.readAsText(e.target.files[0]);
@@ -749,6 +1076,7 @@ document.addEventListener('change', (e) => {
 });
 
 /* ----------------------------- Boot ------------------------------- */
+migrate();
 applyTheme();
 render();
 if ('serviceWorker' in navigator) {
