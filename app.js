@@ -204,7 +204,7 @@ function ring(score, size = 46) {
 function header(actionHtml = '') {
   return `<div class="app-head">
     <div class="brand">
-      <div class="mark"><img src="logo-mark.png" alt="Vimarsha" /></div>
+      <div class="mark"><img src="logo-mark.svg" alt="Vimarsha" /></div>
       <div><div class="name">Vimarsha</div><div class="sub">Meditation Journal</div></div>
     </div>
     <div class="head-actions">
@@ -219,7 +219,7 @@ function header(actionHtml = '') {
 function installBanner() {
   if (isStandalone() || state.installDismissed) return '';
   return `<div class="install-banner fade-in">
-    <span class="ib-icon"><img src="logo-mark.png" alt="" /></span>
+    <span class="ib-icon"><img src="logo-mark.svg" alt="" /></span>
     <span class="ib-text">
       <span class="ib-t">Keep Vimarsha one tap away</span>
       <span class="ib-d">Add to your home screen — app-like &amp; offline.</span>
@@ -231,7 +231,7 @@ function installBanner() {
 
 function footer() {
   return `<div class="footer fade-in">
-    <div class="footer-logo"><img src="logo-mark.png" alt="Vimarsha" /></div>
+    <div class="footer-logo"><img src="logo-mark.svg" alt="Vimarsha" /></div>
     <p class="credit-note">This way of journaling is drawn from <strong>Om Swami’s</strong>
       <a href="https://www.amazon.in/Million-Thoughts-Meditation-Himalayan-Mystic/dp/8184959451" target="_blank" rel="noopener"><em>A Million Thoughts</em></a>.</p>
     <p class="offering">This humble effort is offered unto Maa’s Lotus Feet.</p>
@@ -613,7 +613,7 @@ function showNameSheet(isFirst) {
   sheet.className = 'scrim';
   sheet.innerHTML = `<div class="sheet" role="dialog">
     <div class="grip"></div>
-    <div class="sheet-emblem"><img src="logo.png" alt="Vimarsha" /></div>
+    <div class="sheet-emblem"><img src="logo.svg" alt="Vimarsha" /></div>
     <h2>${isFirst ? 'Welcome to Vimarsha' : 'Your name'}</h2>
     <p class="lead">${isFirst ? 'What may I call you? Your name stays on this device and greets you each visit.' : 'Update how Vimarsha greets you.'}</p>
     <div class="field" style="margin:14px 2px 0">
@@ -639,7 +639,7 @@ function showSupportSheet() {
   sheet.innerHTML = `<div class="sheet" role="dialog">
     <div class="grip"></div>
     <button class="sheet-close" data-act="close-support" aria-label="Close">&times;</button>
-    <div class="sheet-emblem"><img src="logo-mark.png" alt="Vimarsha" /></div>
+    <div class="sheet-emblem"><img src="logo-mark.svg" alt="Vimarsha" /></div>
     <h2>Support this offering</h2>
     <p class="lead">Any amount is received with gratitude — a contribution toward keeping this practice alive.</p>
     <a class="paypal-btn" href="https://paypal.me/keshavom" target="_blank" rel="noopener">
@@ -694,7 +694,7 @@ function showInstallSheet() {
   sheet.className = 'scrim';
   sheet.innerHTML = `<div class="sheet" role="dialog">
     <div class="grip"></div>
-    <div class="sheet-emblem"><img src="logo-mark.png" alt="Vimarsha" /></div>
+    <div class="sheet-emblem"><img src="logo-mark.svg" alt="Vimarsha" /></div>
     <h2>Keep Vimarsha one tap away</h2>
     <p class="lead">Add it to your home screen — full-screen, app-like, and works offline.</p>
     <ol class="install-steps">${steps}</ol>
