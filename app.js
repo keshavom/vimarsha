@@ -396,7 +396,7 @@ function viewSession() {
         <label>Notes (optional)</label>
         <textarea id="f-notes" placeholder="Anything you noticed today…">${esc(d.notes || '')}</textarea>
       </div>
-      <button class="notion-btn" data-act="notion-sit">${notionGlyph()} Send to Notion</button>
+      <button class="notes-btn" data-act="notes-sit">${notesGlyph()} Save to Notes</button>
     </div>
 
     <div class="totals totals-2 fade-in" style="margin-top:16px">
@@ -459,7 +459,7 @@ function viewReflect() {
         <label>Notes (optional)</label>
         <textarea id="rf-notes" placeholder="How did the day feel, off the cushion?…">${esc(d.notes || '')}</textarea>
       </div>
-      <button class="notion-btn" data-act="notion-reflect">${notionGlyph()} Send to Notion</button>
+      <button class="notes-btn" data-act="notes-reflect">${notesGlyph()} Save to Notes</button>
     </div>
 
     <div class="totals totals-1 fade-in" style="margin-top:16px">
@@ -723,11 +723,11 @@ function showStretchSheet(score, entry) {
         <button class="choice" data-act="stretched-yes">Yes, I’ve stretched</button>
         <button class="choice" data-act="stretched-no">Not yet</button>
       </div>
-      <button class="notion-btn ghost-wide" data-act="notion-saved">${notionGlyph()} Send to Notion</button>
+      <button class="notes-btn ghost-wide" data-act="notes-saved">${notesGlyph()} Save to Notes</button>
     </div>
   </div>`;
   sheet.addEventListener('click', (e) => {
-    if (e.target.closest('[data-act="notion-saved"]')) { sendToNotion(entry, 'session'); return; }
+    if (e.target.closest('[data-act="notes-saved"]')) { saveToNotes(entry, 'session'); return; }
     if (e.target === sheet) { sheet.remove(); go('home'); return; }
     if (e.target.closest('[data-act="stretched-yes"]')) { sheet.remove(); toast('🙏 Well done'); go('home'); return; }
     if (e.target.closest('[data-act="stretched-no"]')) {
@@ -752,21 +752,21 @@ function showReflectSavedSheet(entry) {
     <div class="celebrate">🌙</div>
     <h2>Reflection saved</h2>
     <p class="lead">Off the cushion <strong>${groupTotal(entry.ratings, OFF)}/50</strong> — rest well.</p>
-    <button class="notion-btn ghost-wide" data-act="notion-saved">${notionGlyph()} Send to Notion</button>
+    <button class="notes-btn ghost-wide" data-act="notes-saved">${notesGlyph()} Save to Notes</button>
     <div class="save-bar" style="position:static;margin-top:14px">
       <button class="btn-primary" data-act="close-saved">Done</button>
     </div>
   </div>`;
   sheet.addEventListener('click', (e) => {
-    if (e.target.closest('[data-act="notion-saved"]')) { sendToNotion(entry, 'reflection'); return; }
+    if (e.target.closest('[data-act="notes-saved"]')) { saveToNotes(entry, 'reflection'); return; }
     if (e.target === sheet || e.target.closest('[data-act="close-saved"]')) { sheet.remove(); go('home'); }
   });
   document.body.appendChild(sheet);
 }
 
-/* ============================== Notion ============================= */
-function notionGlyph() {
-  // simple page/arrow glyph; styled via .notion-btn svg
+/* ============================== Save to Notes ============================= */
+function notesGlyph() {
+  // document glyph; styled via .notes-btn svg
   return '<svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7zM14 3v5h5"/><path d="M10 13h6M10 17h4"/></svg>';
 }
 
@@ -802,42 +802,89 @@ function entryMarkdown(e, kind) {
   return lines.join('\n');
 }
 
-function sendToNotion(entry, kind) {
-  const md = entryMarkdown(entry, kind);
-  (navigator.clipboard ? navigator.clipboard.writeText(md) : Promise.reject())
-    .then(() => showNotionSheet(md, true))
-    .catch(() => showNotionSheet(md, false));
+/* Plain-text version (no markdown symbols) — reads cleanly in Apple Notes,
+   Google Keep, Mail, Messages, etc. that don't render markdown. */
+function entryPlain(e, kind) {
+  const who = (e.userName || '').trim();
+  const L = [];
+  if (kind === 'reflection') {
+    L.push('🪷 Vimarsha — End-of-day reflection');
+    L.push(`Date: ${fmtDate(e.date)}${who ? `  ·  By: ${who}` : ''}`);
+    L.push(`Off the cushion: ${groupTotal(e.ratings, OFF)}/50 (${offScore(e)}/100)`);
+    L.push('');
+    L.push(OFF.title.toUpperCase());
+    OFF.aspects.forEach((a) => { const v = e.ratings?.maintain?.[a.k]; L.push(`• ${a.k}: ${v == null ? '—' : v}/10`); });
+    L.push('');
+  } else {
+    L.push(`🪷 Vimarsha — ${e.label || 'Session'}`);
+    L.push(`Date: ${fmtDate(e.date)}${who ? `  ·  By: ${who}` : ''}`);
+    L.push(`Wellbeing: ${sitWellbeing(e)}/100`);
+    L.push('');
+    SIT_GROUPS.forEach((g) => {
+      L.push(`${g.title.toUpperCase()} (${groupTotal(e.ratings, g)}/${g.max})`);
+      g.aspects.forEach((a) => { const v = e.ratings?.[g.id]?.[a.k]; L.push(`• ${a.k}: ${v == null ? '—' : v}/10`); });
+      L.push('');
+    });
+    if ((e.otherReason || '').trim()) { L.push(`Other reason: ${e.otherReason.trim()}`); L.push(''); }
+  }
+  if ((e.notes || '').trim()) { L.push('NOTES'); L.push(e.notes.trim()); L.push(''); }
+  L.push('— Logged in Vimarsha · vimarsha-daily.vercel.app');
+  return L.join('\n');
 }
 
-function showNotionSheet(md, copied) {
-  const existing = document.querySelector('.scrim.notion-scrim');
+function entryTitle(e, kind) {
+  return kind === 'reflection' ? 'Vimarsha — End-of-day reflection' : 'Vimarsha — ' + (e.label || 'Session');
+}
+
+function copyText(text, okMsg) {
+  return (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+    .then(() => { toast(okMsg || 'Copied 📋'); return true; })
+    .catch(() => { toast('Select the text & copy'); return false; });
+}
+
+// Entry point used by every "Save to Notes" button.
+function saveToNotes(entry, kind) { showNotesSheet(entry, kind); }
+
+function showNotesSheet(entry, kind) {
+  const md = entryMarkdown(entry, kind);
+  const txt = entryPlain(entry, kind);
+  const title = entryTitle(entry, kind);
+  const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+  const obsidian = 'obsidian://new?name=' + encodeURIComponent(title) + '&content=' + encodeURIComponent(md);
+  const existing = document.querySelector('.scrim.notes-scrim');
   if (existing) existing.remove();
   const sheet = document.createElement('div');
-  sheet.className = 'scrim notion-scrim';
+  sheet.className = 'scrim notes-scrim';
   sheet.innerHTML = `<div class="sheet" role="dialog">
     <div class="grip"></div>
-    <button class="sheet-close" data-act="close-notion" aria-label="Close">&times;</button>
-    <div class="celebrate">${copied ? '📋' : '📝'}</div>
-    <h2>${copied ? 'Copied for Notion' : 'Copy for Notion'}</h2>
-    <p class="lead">${copied
-      ? 'Open Notion, create or open any page, and paste (⌘/Ctrl + V). It turns into a clean page automatically.'
-      : 'Select the text below, copy it, then paste it into any Notion page (⌘/Ctrl + V).'}</p>
-    ${copied ? '' : `<div class="field" style="margin:14px 2px 0"><textarea id="notion-md" readonly style="min-height:160px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem">${esc(md)}</textarea></div>`}
-    <a class="paypal-btn" style="margin-top:14px" href="https://www.notion.so/" target="_blank" rel="noopener">
-      ${notionGlyph()} Open Notion ↗
-    </a>
+    <button class="sheet-close" data-act="close-notes" aria-label="Close">&times;</button>
+    <div class="celebrate">🗒️</div>
+    <h2>Save to your notes</h2>
+    <p class="lead">Send this entry to any notes app — Notion, Apple Notes, Obsidian, Google Keep, Mail, or anywhere you write.</p>
+    ${canShare ? `<button class="btn-primary" style="width:100%;margin-bottom:12px" data-act="notes-share">
+      <svg viewBox="0 0 24 24" style="width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;vertical-align:-3px;margin-right:6px"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M8 7l4-4 4 4"/></svg>
+      Share to an app…</button>` : ''}
+    <div class="notes-grid">
+      <button class="notes-opt" data-act="notes-md"><span class="no-t">Copy for Notion</span><span class="no-d">Markdown · also Obsidian, Bear</span></button>
+      <button class="notes-opt" data-act="notes-plain"><span class="no-t">Copy plain text</span><span class="no-d">Apple Notes, Keep, Mail</span></button>
+      <a class="notes-opt" href="https://www.notion.so/" target="_blank" rel="noopener"><span class="no-t">Open Notion ↗</span><span class="no-d">then paste</span></a>
+      <a class="notes-opt" href="${obsidian}"><span class="no-t">Open Obsidian ↗</span><span class="no-d">creates the note</span></a>
+    </div>
+    <details class="notes-peek"><summary>Show / select the text</summary>
+      <div class="field" style="margin:10px 2px 0"><textarea id="notes-fallback" readonly style="min-height:140px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem">${esc(md)}</textarea></div>
+    </details>
     <div class="save-bar" style="position:static;margin-top:12px">
-      ${copied ? '' : '<button class="btn-secondary" style="flex:1" data-act="copy-notion">Copy text</button>'}
-      <button class="btn-primary" data-act="close-notion">Done</button>
+      <button class="btn-secondary" style="flex:1" data-act="close-notes">Done</button>
     </div>
   </div>`;
   sheet.addEventListener('click', (e) => {
-    if (e.target === sheet || e.target.closest('[data-act="close-notion"]')) { sheet.remove(); return; }
-    if (e.target.closest('[data-act="copy-notion"]')) {
-      const ta = sheet.querySelector('#notion-md');
-      ta.select(); ta.setSelectionRange(0, md.length);
-      try { document.execCommand('copy'); toast('Copied 📋'); } catch { toast('Select all & copy'); }
+    if (e.target === sheet || e.target.closest('[data-act="close-notes"]')) { sheet.remove(); return; }
+    if (e.target.closest('[data-act="notes-share"]')) {
+      if (navigator.share) navigator.share({ title, text: txt }).catch(() => {});
+      return;
     }
+    if (e.target.closest('[data-act="notes-md"]')) { copyText(md, 'Copied for Notion 📋'); return; }
+    if (e.target.closest('[data-act="notes-plain"]')) { copyText(txt, 'Copied as plain text 📋'); return; }
   });
   document.body.appendChild(sheet);
 }
@@ -1030,8 +1077,8 @@ document.addEventListener('click', (e) => {
       break;
     case 'edit-name': showNameSheet(false); break;
     case 'support': showSupportSheet(); break;
-    case 'notion-sit': syncSitDraft(); sendToNotion(state.draft, 'session'); break;
-    case 'notion-reflect': syncReflectDraft(); sendToNotion(state.reflectDraft, 'reflection'); break;
+    case 'notes-sit': syncSitDraft(); saveToNotes(state.draft, 'session'); break;
+    case 'notes-reflect': syncReflectDraft(); saveToNotes(state.reflectDraft, 'reflection'); break;
     case 'clear-session':
       if (confirm('Clear all ratings and notes for this session? (Date, name and session label stay.)')) {
         state.draft.ratings = emptyRatings();
