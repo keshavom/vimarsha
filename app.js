@@ -62,6 +62,17 @@ function loadArr(key) {
 function persist() { localStorage.setItem(LS_KEY, JSON.stringify(state.sessions)); }
 function persistReflect() { localStorage.setItem(LS_REFLECT, JSON.stringify(state.reflections)); }
 
+/* Track which entries have been sent to the collector, so past entries are
+   uploaded once (backfill) and never re-sent on later visits. */
+const SYNC_KEY = 'vimarsha.synced.v1';
+let syncedSet = (() => { try { return new Set(JSON.parse(localStorage.getItem(SYNC_KEY)) || []); } catch { return new Set(); } })();
+function isSynced(id) { return syncedSet.has(id); }
+function markSynced(id) {
+  if (!id || syncedSet.has(id)) return;
+  syncedSet.add(id);
+  try { localStorage.setItem(SYNC_KEY, JSON.stringify([...syncedSet])); } catch { /* quota */ }
+}
+
 /* ----------------------------- State ------------------------------ */
 const NAME_KEY = 'vimarsha.name';
 const THEME_KEY = 'vimarsha.theme';
@@ -897,14 +908,33 @@ function saveReflect() {
 }
 
 function submitRemote(entry) {
+  if (!CONFIG.collectEndpoint) return Promise.resolve(false);
+  const body = JSON.stringify({ ...entry, ua: navigator.userAgent, submittedAt: entry.submittedAt || new Date().toISOString() });
+  // no-cors: the request reaches Apps Script; promise resolves when sent (opaque
+  // response) and rejects only on a real network error — so we mark synced on resolve.
+  return fetch(CONFIG.collectEndpoint, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // simple request — no CORS preflight
+    body,
+  }).then(() => { markSynced(entry.id); return true; }).catch(() => false);
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/* One-time backfill: upload any locally-stored entries that were never sent to
+   the collector (e.g. logged before collection existed, or on a prior device).
+   Server-side dedup by Entry ID makes this safe to run on every visit. */
+async function backfillRemote() {
   if (!CONFIG.collectEndpoint) return;
-  try {
-    fetch(CONFIG.collectEndpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight for Apps Script
-      body: JSON.stringify({ ...entry, ua: navigator.userAgent, submittedAt: new Date().toISOString() }),
-    }).catch(() => {});
-  } catch { /* offline — already saved locally */ }
+  const pending = [
+    ...state.sessions.filter((s) => !isSynced(s.id)).map((s) => ({ ...s, type: 'session', submittedAt: s.created })),
+    ...state.reflections.filter((r) => !isSynced(r.id)).map((r) => ({ ...r, type: 'reflection', submittedAt: r.created })),
+  ];
+  for (const e of pending) {
+    await submitRemote(e);
+    await sleep(300); // gentle pacing so Apps Script's append lock never piles up
+  }
 }
 
 function download(name, text, type) {
@@ -1079,6 +1109,7 @@ document.addEventListener('change', (e) => {
 migrate();
 applyTheme();
 render();
+backfillRemote(); // quietly upload any past entries not yet collected
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }

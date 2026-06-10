@@ -62,6 +62,22 @@ function doPost(e) {
     if (!sh) { sh = ss.insertSheet('Submissions'); }
     ensureHeaders_(sh);
 
+    // Idempotent: skip if this Entry ID was already recorded (safe for backfills).
+    var id = d.id || '';
+    if (id && sh.getLastRow() > 1) {
+      var header = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+      var idCol = header.indexOf('Entry ID') + 1;
+      if (idCol > 0) {
+        var ids = sh.getRange(2, idCol, sh.getLastRow() - 1, 1).getValues();
+        for (var i = 0; i < ids.length; i++) {
+          if (ids[i][0] === id) {
+            return ContentService.createTextOutput(JSON.stringify({ ok: true, duplicate: true }))
+              .setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+      }
+    }
+
     var q = sum_(r, 'quality'), b = sum_(r, 'blocks'), m = sum_(r, 'maintain');
     var wellbeing = (type === 'reflection')
       ? Math.round((m / 50) * 100)
