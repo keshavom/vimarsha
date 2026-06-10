@@ -6,5 +6,5 @@
  *
  * Leave it as null to keep each person's data on their own device only. */
 window.VIMARSHA_CONFIG = {
-  collectEndpoint: "https://script.google.com/macros/s/AKfycbzDhRFuvWAaSV4T3BDq_EPZGLS9650uy17vw1SRstGvxyc18l0hHsZCZ_VWANz8cFuneA/exec",
+  collectEndpoint: "https://script.google.com/macros/s/AKfycbyNWkTKrEh2223mdJ7TEXKGQFJ392uvpovu3EemJJTcSF94sPKBkWL6ZPPJv6v-FHcG/exec",
 };
